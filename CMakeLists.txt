@@ -8,8 +8,8 @@ file(GLOB_RECURSE  src  src/*)
 file(GLOB_RECURSE  hdr  include/*) 
 
 add_library(${PROJECT_NAME}  SHARED  ${src}) 
-target_include_directories(${PROJECT_NAME}  PUBLIC include) 
+target_include_directories(${PROJECT_NAME}  PRIVATE  include) 
 
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION  ${PROJECT_VERSION}) 
-set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_NAME}) 
+set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION_MINOR}) 
 set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER include/usage.h) 

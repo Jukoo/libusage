@@ -23,14 +23,13 @@
 #include <libgen.h>  
 #include <getopt.h>
 
-#include "usage.h"
-
+#include "usage.h" 
 
 struct  __getopt_usage_t *  init ( struct  option *  opt   , int size  )  
 {
 
   if ( opt ==  _nullable)  return  _nullable ;  
-   
+  
   struct __getopt_usage_t *  goptu = (struct __getopt_usage_t*) malloc(sizeof(*goptu)) ;  
   
   goptu->opt = opt ; 
@@ -44,6 +43,7 @@ struct  __getopt_usage_t *  init ( struct  option *  opt   , int size  )
 
 struct __getopt_usage_t * init_(struct option *  opt , int size ,  char * const *  desclist)  
 {
+
    if (desclist == _nullable)  
    { 
      return init(opt  , size) ; 
@@ -55,8 +55,9 @@ struct __getopt_usage_t * init_(struct option *  opt , int size ,  char * const 
 
 #ifdef GETOPT_SYNOPSIS 
    explicit_bzero(goptu->synopsis,MXBUFF);  
-#endif 
-   dump_desclist(goptu ,  desclist) ;   
+#endif
+
+ dump_desclist(goptu ,  desclist) ;   
 
    return goptu; 
 
@@ -65,20 +66,23 @@ struct __getopt_usage_t * init_(struct option *  opt , int size ,  char * const 
 
 void dump_desclist ( struct  __getopt_usage_t  * goptu  ,    char  * const *desclist ) 
 {
-  int  desclist_index = 0 ; 
-  while ( desclist_index  <=goptu->opt_size ) 
+  int  desclist_index = 0 ;
+  if ( desclist ==  _nullable ) return ; 
+
+  while ( desclist_index  < goptu->opt_size ) 
   {
 
     memcpy (
         (goptu->opt_desc+desclist_index) , 
         desclist[desclist_index] ,
         strlen(desclist[desclist_index]))  ; 
+
     desclist_index++ ;
   }
 }
 
 void
-show_usage( struct __getopt_usage_t * goptu , char * const *  argv   )  
+show_usage( struct __getopt_usage_t * goptu , char * const *  argv , int synopsis)  
 {
    if (goptu == _nullable)   
    {
@@ -98,7 +102,16 @@ show_usage( struct __getopt_usage_t * goptu , char * const *  argv   )
    
    int index  = 0 ;
    int index_options = 0 ; 
-#ifdef   GETOPT_SYNOPSIS  
+
+   if (synopsis | GETOPT_SYNOPSIS_OFF) 
+   {
+     index = 1;  
+     memcpy(goptu->synopsis ,  goptu->opt_desc[index^SYNOPSIS_INDEX] , MXBUFF) ; 
+     fprintf(stdout ,  "\t%s\n" ,  goptu->synopsis); 
+     index_options =1  ; 
+   }
+#ifdef   GETOPT_SYNOPSIS
+   puts("gs defined !") ; 
    index = 1;  
    memcpy(goptu->synopsis ,  goptu->opt_desc[index^SYNOPSIS_INDEX] , MXBUFF) ; 
    fprintf(stdout ,  "\t%s\n" ,  goptu->synopsis); 

@@ -25,8 +25,9 @@ extern "C"  {
 #define   MXBUFF 0xff
 #define   RBN_MXBUFF ( MXBUFF >> 4 )
 
-#define  _nullable   ((void *) (0UL << 1) )   
-#define  _Nullable   _nullable 
+#define  _nullable   ( (void *) (0UL << 1) )   
+#define  __void0h  _nullable    
+#define  _Nullable _nullable 
 
 #ifdef  SHOWUPWUR  
   #define  __must_check  __attribute__((warn_unused_result)) 
@@ -34,13 +35,12 @@ extern "C"  {
   #define  __must_check 
 #endif
 
-#ifdef GETOPT_SYNOPSIS
+#ifdef GETOPT_SYNOPSIS 
   #define SYNOPSIS_INDEX 1
   #define __condcheck(x,y)  x <= y 
 #else 
   #define __condcheck(x,y)  x < y 
-#endif 
-
+#endif
 
 #define  __ulog(__mesg ,  ... )  \
   fprintf(stdout  , __mesg , ##__VA_ARGS__) ;  
@@ -51,8 +51,20 @@ enum {
   sizeof(__target_data)/sizeof(__target_data[0]) 
 } ;
 
-enum { 
+enum  {
+  GETOPT_SYNOPSIS_OFF , 
+#define GETOPT_SYNOPSIS_OFF GETOPT_SYNOPSIS_OFF 
+  GETOPT_SYNOPSIS_ON
+} ;
+
+#define __condcheck(__stat , x,y)\
+
+
+/**General errors*/
+enum {
+  /** basename too long */ 
   BN2LONG = ~22 , 
+  
 }; 
 
 typedef  struct  __getopt_usage_t  gopt_usage_t  ; 
@@ -62,10 +74,7 @@ struct __getopt_usage_t {
   char opt_desc[MXBUFF][MXBUFF] ;
 
 #ifdef GETOPT_SYNOPSIS 
-  union  { 
-     char synopsis[MXBUFF] ;
-     //... 
-  }; 
+  char synopsis[MXBUFF] ;
 #endif 
 
 } ;
@@ -92,13 +101,12 @@ init_( struct option * __opt , int size  ,char * const * __description_list ) ;
 #define  init_no_desc    init 
 #define  init_with_desc  init_ 
 
-
 /** @fn extern inline void endof_getoptusage ( struct __getopt_usage_t  *  __goptu ) 
  *  @brief release allocated resources 
  *  @param struct __getopt_usage_t  *  
  */ 
 extern  inline void endof_getoptusage  ( struct __getopt_usage_t *  __restrict__   __goptu  ) {
-   if(__goptu  == (void *)0) return  ; 
+   if(__goptu  == _nullable)  return  ; 
    free(__goptu) ; 
 } 
 
@@ -111,15 +119,19 @@ extern  inline void endof_getoptusage  ( struct __getopt_usage_t *  __restrict__
 void dump_desclist ( struct  __getopt_usage_t  * goptu  ,    char  * const *desclist ) ; 
 
 
+
 /** @fn  show_usage (struct __getopt_usage_t *)  
  *  @brief print  description list dumped on gopt_usage_t 
  */ 
-void  show_usage (struct __getopt_usage_t *  __goptu ,  char * const *  __argv ) ; 
+void  show_usage (struct __getopt_usage_t *  __goptu ,  char * const *  __argv , int __synopsis_stat ) ; 
 
+//build  shortoption from strct option
+//char *retrive_shortopt(struct __getopt_usage_t * __goptu)
 
 /** @brief basename program  manipulation to prettyfy */ 
 static char * __must_check root_basename (char  *const *  __argv ,char *__restrict__   __dumper)  ; 
 static char * __must_check fds_basename (char *basename) ; 
+
 
 #ifdef __cplusplus 
 } 
