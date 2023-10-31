@@ -34,9 +34,7 @@ struct  __getopt_usage_t *  init ( struct  option *  opt   , int size  )
   
   goptu->opt = opt ; 
   goptu->opt_size  =   size  ;
-#ifdef GETOPT_SYNOPSIS 
-   explicit_bzero(goptu->synopsis,MXBUFF);  
-#endif 
+  explicit_bzero(goptu->synopsis,MXBUFF);  
   return goptu;  
 }
 
@@ -53,9 +51,7 @@ struct __getopt_usage_t * init_(struct option *  opt , int size ,  char * const 
    goptu->opt = opt ; 
    goptu->opt_size  =   size  ; 
 
-#ifdef GETOPT_SYNOPSIS 
    explicit_bzero(goptu->synopsis,MXBUFF);  
-#endif
 
  dump_desclist(goptu ,  desclist) ;   
 
@@ -69,7 +65,7 @@ void dump_desclist ( struct  __getopt_usage_t  * goptu  ,    char  * const *desc
   int  desclist_index = 0 ;
   if ( desclist ==  _nullable ) return ; 
 
-  while ( desclist_index  < goptu->opt_size ) 
+  while ( desclist_index  <= goptu->opt_size ) 
   {
 
     memcpy (
@@ -102,31 +98,44 @@ show_usage( struct __getopt_usage_t * goptu , char * const *  argv , int synopsi
    
    int index  = 0 ;
    int index_options = 0 ; 
-
-   if (synopsis | GETOPT_SYNOPSIS_OFF) 
+   
+   if (synopsis == GETOPT_SYNOPSIS_ON ) 
    {
-     index = 1;  
-     memcpy(goptu->synopsis ,  goptu->opt_desc[index^SYNOPSIS_INDEX] , MXBUFF) ; 
+     memcpy(goptu->synopsis ,  goptu->opt_desc[index] , MXBUFF) ; 
+     index++ ; 
      fprintf(stdout ,  "\t%s\n" ,  goptu->synopsis); 
-     index_options =1  ; 
+     index_options =1  ;  
    }
-#ifdef   GETOPT_SYNOPSIS
-   puts("gs defined !") ; 
-   index = 1;  
-   memcpy(goptu->synopsis ,  goptu->opt_desc[index^SYNOPSIS_INDEX] , MXBUFF) ; 
-   fprintf(stdout ,  "\t%s\n" ,  goptu->synopsis); 
-   index_options =1  ; 
-#endif 
-
-   puts("Options:") ;
-   while(__condcheck(index , goptu->opt_size)) 
+   
+   __ulog("%s\n", "Options :") ;
+   while(switch_condition(synopsis,  &index , goptu->opt_size ))  
    {
-      fprintf(stdout  , "\t-%-1c, --%-2s\t" ,  goptu->opt[index - index_options].val ,  goptu->opt[index-index_options].name); 
-      fprintf(stdout, "%-10s\n", goptu->opt_desc[index]); 
+     fprintf(stdout  , "::\t-%-1c, --%-2s\t" ,  goptu->opt[index - index_options].val ,  goptu->opt[index-index_options].name); 
+      fprintf(stdout, ": %-10s\n", goptu->opt_desc[index]);
       index++ ;  
    }
 }
 
+
+static  char switch_condition(int synopsis_status , int *index, const int refcount) 
+{
+   if (synopsis_status ==  GETOPT_SYNOPSIS_OFF) 
+     return  __get_ccgsyn(GETOPT_SYNOPSIS_OFF ,  *index , refcount) ; 
+
+  
+   return __get_ccgsyn(GETOPT_SYNOPSIS_ON , *index , refcount) ; 
+}
+
+
+void show_usage_no_synopsis(struct __getopt_usage_t *  goptu  , char *const * argv)  
+{
+  show_usage(goptu , argv ,  GETOPT_SYNOPSIS_OFF) ; 
+}
+
+void show_usage_with_synopsis(struct __getopt_usage_t * goptu , char *const * argv ) 
+{
+  show_usage(goptu , argv , GETOPT_SYNOPSIS_ON) ; 
+}
 
 static char * __must_check  root_basename (char * const * argv ,  char  * restrict rb_dump ) 
 {
@@ -134,7 +143,7 @@ static char * __must_check  root_basename (char * const * argv ,  char  * restri
    
   if (strlen(localbasname) >  RBN_MXBUFF)    
   {
-     errx(BN2LONG,  "root basename too long !");  
+     errx(BN2LONG,  "root basename too long !"); 
   }
 
   fds_basename(localbasname) ;  
@@ -146,7 +155,6 @@ static char * __must_check  root_basename (char * const * argv ,  char  * restri
 
 static char * __must_check fds_basename  (  char *basename ) 
 {
-  
   char dot_start = 0x2e ;
    /** looking  for  './'*/
   if ( (*basename+0) ==dot_start  &&  (*basename+1) ==  dot_start++) 

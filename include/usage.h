@@ -35,13 +35,6 @@ extern "C"  {
   #define  __must_check 
 #endif
 
-#ifdef GETOPT_SYNOPSIS 
-  #define SYNOPSIS_INDEX 1
-  #define __condcheck(x,y)  x <= y 
-#else 
-  #define __condcheck(x,y)  x < y 
-#endif
-
 #define  __ulog(__mesg ,  ... )  \
   fprintf(stdout  , __mesg , ##__VA_ARGS__) ;  
 
@@ -54,10 +47,15 @@ enum {
 enum  {
   GETOPT_SYNOPSIS_OFF , 
 #define GETOPT_SYNOPSIS_OFF GETOPT_SYNOPSIS_OFF 
-  GETOPT_SYNOPSIS_ON
+  
+  GETOPT_SYNOPSIS_ON, 
+#define GETOPT_SYNOPSIS_ON GETOPT_SYNOPSIS_ON
 } ;
 
-#define __condcheck(__stat , x,y)\
+#define  __condcheck_GETOPT_SYNOPSIS_ON(_x,_y)  _x <= _y 
+#define  __condcheck_GETOPT_SYNOPSIS_OFF(_x,_y) _x < _y
+
+#define __get_ccgsyn(__synopsis_attr , x ,y) __condcheck_##__synopsis_attr(x,y)  
 
 
 /**General errors*/
@@ -73,9 +71,7 @@ struct __getopt_usage_t {
   int opt_size  ; 
   char opt_desc[MXBUFF][MXBUFF] ;
 
-#ifdef GETOPT_SYNOPSIS 
   char synopsis[MXBUFF] ;
-#endif 
 
 } ;
 /** @fn  struct __getopt_usage_t  * init (struct option *   , int size )   
@@ -124,6 +120,14 @@ void dump_desclist ( struct  __getopt_usage_t  * goptu  ,    char  * const *desc
  *  @brief print  description list dumped on gopt_usage_t 
  */ 
 void  show_usage (struct __getopt_usage_t *  __goptu ,  char * const *  __argv , int __synopsis_stat ) ; 
+
+static char switch_condition (  int __synopsis_status ,  int * index   , int const refcount) ; 
+
+void show_usage_with_synopsis( struct __getopt_usage_t * __goptu  , char *const * __argv) ; 
+void show_usage_no_synopsis(struct __getopt_usage_t * __goptu, char *const * __argv);
+
+#define show_usage_ws show_usage_with_synopsis  
+#define show_usage_ns show_usage_no_synopsis 
 
 //build  shortoption from strct option
 //char *retrive_shortopt(struct __getopt_usage_t * __goptu)

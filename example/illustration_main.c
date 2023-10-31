@@ -33,7 +33,7 @@ main ( int __ac , char **__av )
      perror("usage init error") ; 
   }
 
-  show_usage(usage , __av);  
+  show_usage_no_synopsis(usage , __av) ;  
 
 
   endof_getoptusage(usage) ; 
