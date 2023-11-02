@@ -1,5 +1,5 @@
 /**  @file getoptusage.h 
-     @brief  build helper usage from getopt_long using options structure 
+     @brief  build helper usage from getopt using options structure 
 
      @Copyright (C) 2023 Umar Ba jUmarB@protonmail.com  , OpenWire Studio .Lab
 
@@ -53,7 +53,7 @@ struct __getopt_usage_t * init_(struct option *  opt , int size ,  char * const 
 
    explicit_bzero(goptu->synopsis,MXBUFF);  
 
- dump_desclist(goptu ,  desclist) ;   
+ dump_desclist(goptu ,  desclist) ; 
 
    return goptu; 
 
@@ -65,9 +65,16 @@ void dump_desclist ( struct  __getopt_usage_t  * goptu  ,    char  * const *desc
   int  desclist_index = 0 ;
   if ( desclist ==  _nullable ) return ; 
 
-  while ( desclist_index  <= goptu->opt_size ) 
-  {
+  // FIXME :TODO 
+  // check if goptu->opt_size and desclist size  are same lenght 
+  // if it's the case   use  < otherwise  <= 
+  //
+  int  syncmp  =  usage_check(goptu , desclist) ; 
+  printf("sync comparator -> %i\n" , syncmp) ; 
+  syncmp =  syncmp  ==0  ?  GETOPT_SYNOPSIS_OFF :  GETOPT_SYNOPSIS_ON ; 
 
+  while (switch_condition(syncmp,&desclist_index ,  goptu->opt_size) )  
+  {
     memcpy (
         (goptu->opt_desc+desclist_index) , 
         desclist[desclist_index] ,
@@ -75,6 +82,56 @@ void dump_desclist ( struct  __getopt_usage_t  * goptu  ,    char  * const *desc
 
     desclist_index++ ;
   }
+  
+  
+}
+
+static int usage_check (struct __getopt_usage_t  * gopt  , char * const *desclist) 
+{
+  int description_list_size  =  0 ; 
+  while (1)  
+  { 
+    if (strlen(desclist[description_list_size]) ==  0  ||  desclist == _nullable)break ; 
+    description_list_size++ ; 
+  }
+
+  description_list_size-=1 ; 
+
+  return abs(gopt->opt_size -  description_list_size)  ; 
+
+}
+
+char * get_shortopt ( struct __getopt_usage_t * goptu )  
+{
+   if (goptu == _nullable) return  _nullable ; 
+  
+   explicit_bzero(goptu->shopt, MXBUFF);  
+   
+   int index  =0 ; 
+   int j_index=0 ; 
+   while ( index <=  goptu->opt_size ) 
+   {
+     switch (goptu->opt[index].has_arg) 
+     {
+       case  no_argument :  
+         memset((goptu->shopt+j_index) ,  goptu->opt[index].val , 1) ; 
+         break ; 
+        case required_argument :
+         memset((goptu->shopt+j_index) ,  goptu->opt[index].val , 1) ;
+         j_index++; 
+         memset((goptu->shopt+j_index) ,  0x3a, 1) ;
+         break ; 
+       case optional_argument : 
+         //! no supported yet 
+         break ; 
+     
+     }
+     index++ ;
+     j_index++; 
+     
+   } 
+
+   return  goptu->shopt ; 
 }
 
 void
@@ -82,7 +139,7 @@ show_usage( struct __getopt_usage_t * goptu , char * const *  argv , int synopsi
 {
    if (goptu == _nullable)   
    {
-     errx(~0 ,"nil <nothing to show>") ; 
+     errx(GINFAIL ,"nil <nothing to show>") ; 
    }
  
    char rbasename[RBN_MXBUFF] = {0}  ;

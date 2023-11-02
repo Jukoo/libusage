@@ -1,10 +1,8 @@
 /**  @file usage.h 
-     @brief  build helper usage from getopt_long
-     
-     This file is not part of GNU C Library 
      @Copyright (C) 2023 Umar Ba jUmarB@protonmail.com  OpenWire Studio .Lab
 
      This program is free software: you can redistribute it and/or modify
+
      it under the terms of the GNU General Public License as published by
      the Free Software Foundation, either version 3 of the License, or
      (at your option) any later version.
@@ -13,14 +11,19 @@
      but WITHOUT ANY WARRANTY; without even the implied warranty of
      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
      GNU General Public License for more details.
+     
+
+     This file is not part of GNU C Library 
 */  
 
 #if !defined  (GETOPT_USAGE_H) 
 #define        GETOPT_USAGE_H 1 
 
+#include <bits/getopt_ext.h> 
+
 #ifdef __cplusplus
 extern "C"  {   
-#endif  
+#endif 
 
 #define   MXBUFF 0xff
 #define   RBN_MXBUFF ( MXBUFF >> 4 )
@@ -35,19 +38,37 @@ extern "C"  {
   #define  __must_check 
 #endif
 
+#define  __noreturn   __attribute__((noreturn))
+#define  __nonull     __attribute__((nonnull))
+
+
 #define  __ulog(__mesg ,  ... )  \
   fprintf(stdout  , __mesg , ##__VA_ARGS__) ;  
 
 enum {
-   GETOPT_SIZE  
-#define  GETOPT_SIZE(__target_data) \
-  sizeof(__target_data)/sizeof(__target_data[0]) 
+   GETOPT_SIZE ,  
+#define  GETOPT_SIZE(__options_struct) \
+  sizeof(__options_struct)/sizeof(__options_struct[0]) 
+
+   GETOPT_DESC_SIZE  
+#define  GETOPT_DESC_SIZE(__description_list)  \
+   sizeof(__description_list)/1 
+  
+  //... 
 } ;
 
+/** Dealing with synopsis  just right after  the command usage : 
+ *  e.g  
+ *   command usage : 
+ *      synopsis  <- 
+ *    options : 
+ **/
 enum  {
+  /*desable synopsis*/
   GETOPT_SYNOPSIS_OFF , 
 #define GETOPT_SYNOPSIS_OFF GETOPT_SYNOPSIS_OFF 
   
+  /*enable synopsis*/
   GETOPT_SYNOPSIS_ON, 
 #define GETOPT_SYNOPSIS_ON GETOPT_SYNOPSIS_ON
 } ;
@@ -63,6 +84,9 @@ enum {
   /** basename too long */ 
   BN2LONG = ~22 , 
   
+  /** getoptusage init failure*/
+  GINFAIL
+  
 }; 
 
 typedef  struct  __getopt_usage_t  gopt_usage_t  ; 
@@ -70,8 +94,8 @@ struct __getopt_usage_t {
   struct option *  opt ; 
   int opt_size  ; 
   char opt_desc[MXBUFF][MXBUFF] ;
-
   char synopsis[MXBUFF] ;
+  char shopt[MXBUFF] ; 
 
 } ;
 /** @fn  struct __getopt_usage_t  * init (struct option *   , int size )   
@@ -101,8 +125,8 @@ init_( struct option * __opt , int size  ,char * const * __description_list ) ;
  *  @brief release allocated resources 
  *  @param struct __getopt_usage_t  *  
  */ 
-extern  inline void endof_getoptusage  ( struct __getopt_usage_t *  __restrict__   __goptu  ) {
-   if(__goptu  == _nullable)  return  ; 
+extern  inline void __nonull  endof_getoptusage  ( struct __getopt_usage_t *  __restrict__   __goptu  ) {
+   if(__goptu  == _nullable) return  ;   
    free(__goptu) ; 
 } 
 
@@ -115,13 +139,17 @@ extern  inline void endof_getoptusage  ( struct __getopt_usage_t *  __restrict__
 void dump_desclist ( struct  __getopt_usage_t  * goptu  ,    char  * const *desclist ) ; 
 
 
+char * get_shortopt(struct  __getopt_usage_t * goptu) ;  
+
+
+static int  usage_check  (struct __getopt_usage_t *  __goptu  ,  char  * const * __description_list)  ; 
 
 /** @fn  show_usage (struct __getopt_usage_t *)  
  *  @brief print  description list dumped on gopt_usage_t 
  */ 
-void  show_usage (struct __getopt_usage_t *  __goptu ,  char * const *  __argv , int __synopsis_stat ) ; 
+void show_usage (struct __getopt_usage_t *  __goptu ,  char * const *  __argv , int __synopsis_stat ) __nonull; 
 
-static char switch_condition (  int __synopsis_status ,  int * index   , int const refcount) ; 
+static char __nonull switch_condition (  int __synopsis_status ,  int * index   , int const refcount) ; 
 
 void show_usage_with_synopsis( struct __getopt_usage_t * __goptu  , char *const * __argv) ; 
 void show_usage_no_synopsis(struct __getopt_usage_t * __goptu, char *const * __argv);
@@ -133,8 +161,8 @@ void show_usage_no_synopsis(struct __getopt_usage_t * __goptu, char *const * __a
 //char *retrive_shortopt(struct __getopt_usage_t * __goptu)
 
 /** @brief basename program  manipulation to prettyfy */ 
-static char * __must_check root_basename (char  *const *  __argv ,char *__restrict__   __dumper)  ; 
-static char * __must_check fds_basename (char *basename) ; 
+static char *   root_basename (char  *const *  __argv ,char *__restrict__   __dumper) __must_check  ; 
+static char *   fds_basename (char *basename) __must_check ; 
 
 
 #ifdef __cplusplus 
