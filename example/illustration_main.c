@@ -22,10 +22,10 @@ char  *descriptions[] = {
   "this is just an illustration" , 
   "show this help", 
   "print version of the programme",
-  "age asdas " , 
-  "age asdas " ,
-  "dasd", 
-  "test",  ""
+  "age" , 
+  "life" ,
+  "ispresent",
+   EODL 
 } ; 
 
 int
@@ -44,7 +44,7 @@ main ( int __ac , char **__av )
   char *sopt = get_shortopt(usage) ; 
   
   printf("shortoption -> %s \n" , sopt) ; 
-  show_usage_with_synopsis(usage , __av) ; 
+  show_usage_no_synopsis(usage , __av) ; 
 
 
 
