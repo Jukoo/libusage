@@ -71,7 +71,9 @@ void dump_desclist ( struct  __getopt_usage_t  * goptu  ,    char  * const *desc
   //
   int  syncmp  =  usage_check(goptu , desclist) ; 
   printf("sync comparator -> %i\n" , syncmp) ; 
-  syncmp =  syncmp  ==0  ?  GETOPT_SYNOPSIS_OFF :  GETOPT_SYNOPSIS_ON ; 
+
+  goptu->cmpcheck_between_optndesc = syncmp  ; 
+  syncmp =  syncmp  == 1  ? GETOPT_SYNOPSIS_ON :  GETOPT_SYNOPSIS_OFF; 
 
   while (switch_condition(syncmp,&desclist_index ,  goptu->opt_size) )  
   {
@@ -95,7 +97,7 @@ static int usage_check (struct __getopt_usage_t  * gopt  , char * const *desclis
     description_list_size++ ; 
   }
 
-  description_list_size-=1 ; 
+  printf("description list item size %i \n" ,  description_list_size) ; 
 
   return abs(gopt->opt_size -  description_list_size)  ; 
 
@@ -134,6 +136,7 @@ char * get_shortopt ( struct __getopt_usage_t * goptu )
    return  goptu->shopt ; 
 }
 
+
 void
 show_usage( struct __getopt_usage_t * goptu , char * const *  argv , int synopsis)  
 {
@@ -171,9 +174,13 @@ show_usage( struct __getopt_usage_t * goptu , char * const *  argv , int synopsi
       fprintf(stdout, ": %-10s\n", goptu->opt_desc[index]);
       index++ ;  
    }
+   if (  goptu->cmpcheck_between_optndesc != synopsis)  
+   {
+     puts("Warning!") ;  
+   }
 }
 
-
+//! TODO : choose an adequate name like : condition_change or comparator_condition_change lt_or_le_con ... whatever ... 
 static  char switch_condition(int synopsis_status , int *index, const int refcount) 
 {
    if (synopsis_status ==  GETOPT_SYNOPSIS_OFF) 

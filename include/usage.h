@@ -57,6 +57,14 @@ enum {
   //... 
 } ;
 
+
+#define _end_of_description_list_marker  "" 
+#define EODL  _end_of_description_list_marker 
+
+#define _end_of_description_list_marker_p  _Nullable 
+#define EODL_P _end_of_description_list_marker_p  
+
+
 /** Dealing with synopsis  just right after  the command usage : 
  *  e.g  
  *   command usage : 
@@ -76,6 +84,9 @@ enum  {
 #define  __condcheck_GETOPT_SYNOPSIS_ON(_x,_y)  _x <= _y 
 #define  __condcheck_GETOPT_SYNOPSIS_OFF(_x,_y) _x < _y
 
+#define  __le__ GETOPT_SYNOPSIS_ON 
+#define  __lt__ GETOPT_SYNOPSIS_OFF 
+
 #define __get_ccgsyn(__synopsis_attr , x ,y) __condcheck_##__synopsis_attr(x,y)  
 
 
@@ -88,14 +99,16 @@ enum {
   GINFAIL
   
 }; 
-
+   
 typedef  struct  __getopt_usage_t  gopt_usage_t  ; 
 struct __getopt_usage_t { 
   struct option *  opt ; 
   int opt_size  ; 
   char opt_desc[MXBUFF][MXBUFF] ;
   char synopsis[MXBUFF] ;
-  char shopt[MXBUFF] ; 
+  char shopt[MXBUFF] ;
+  
+  int  cmpcheck_between_optndesc ; 
 
 } ;
 /** @fn  struct __getopt_usage_t  * init (struct option *   , int size )   
@@ -122,7 +135,8 @@ init_( struct option * __opt , int size  ,char * const * __description_list ) ;
 #define  init_with_desc  init_ 
 
 /** @fn extern inline void endof_getoptusage ( struct __getopt_usage_t  *  __goptu ) 
- *  @brief release allocated resources 
+ *  @brief release allocated resources
+ *  **after using  init_ or init  please call  this function  to avoid memory linkage **
  *  @param struct __getopt_usage_t  *  
  */ 
 extern  inline void __nonull  endof_getoptusage  ( struct __getopt_usage_t *  __restrict__   __goptu  ) {
