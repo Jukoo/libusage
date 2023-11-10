@@ -1,5 +1,5 @@
 /**  @file usage.h 
-     @Copyright (C) 2023 Umar Ba jUmarB@protonmail.com  OpenWire Studio .Lab
+     @Copyright (C) 2023 Umar Ba jUmarB@protonmail.com  AT OpenWire Studio .Lab
 
      This program is free software: you can redistribute it and/or modify
 
@@ -18,6 +18,8 @@
 
 #if !defined  (GETOPT_USAGE_H) 
 #define        GETOPT_USAGE_H 1 
+
+#define  USAGE  
 
 #include <bits/getopt_ext.h> 
 
@@ -38,10 +40,18 @@ extern "C"  {
   #define  __must_check 
 #endif
 
-#define  __noreturn   __attribute__((noreturn))
-#define  __nonull     __attribute__((nonnull))
+#define  __noreturn   __attribute__((__noreturn__))
+#define  __nonull     __attribute__((__nonnull__)) 
+#define  __pure       __attribute__((__pure__))
+#define  __nonullx(index) __attribute__((__nonnull__(index)))
 
-
+#ifdef  USAGE_AUTO_DEALOCATE
+/** ! when it define no need to call  dealocate procedure 
+ *  ! **/
+#define  __destroy  __attribute__((destructor))
+#else 
+#define  __destroy 
+#endif 
 #define  __ulog(__mesg ,  ... )  \
   fprintf(stdout  , __mesg , ##__VA_ARGS__) ;  
 
@@ -84,8 +94,6 @@ enum  {
 #define  __condcheck_GETOPT_SYNOPSIS_ON(_x,_y)  _x <= _y 
 #define  __condcheck_GETOPT_SYNOPSIS_OFF(_x,_y) _x < _y
 
-#define  __le__ GETOPT_SYNOPSIS_ON 
-#define  __lt__ GETOPT_SYNOPSIS_OFF 
 
 #define __get_ccgsyn(__synopsis_attr , x ,y) __condcheck_##__synopsis_attr(x,y)  
 
@@ -108,6 +116,8 @@ struct __getopt_usage_t {
   char synopsis[MXBUFF] ;
   char shopt[MXBUFF] ;
   
+  //@TODO : make a function  that return cmpcheck_between_optndesc 
+  //--- i should change the name 
   int  cmpcheck_between_optndesc ; 
 
 } ;
@@ -117,8 +127,7 @@ struct __getopt_usage_t {
  *  @param   int size  :!NOTE: you'd better  user GETOPT_SIZE() macro  to get the size of  options
  *  @return  struct  __getopt_usage_t  *
  */ 
-struct __getopt_usage_t*  
-init( struct option * __opt , int size );
+USAGE struct __getopt_usage_t* init( struct option * __opt , int size );
 
 /** @fn  struct __getopt_usage_t * init_(struct option * , int size , char * const * dl)
  *  @brief like the init function above +  dump_desclist to feed  opt_desc 
@@ -127,23 +136,17 @@ init( struct option * __opt , int size );
  *  @param   char * const *  dl  when (void *) 0 or NULL the init function above is used by default   
  *  @return  struct  __getopt_usage_t  *
  */ 
-struct __getopt_usage_t* 
-init_( struct option * __opt , int size  ,char * const * __description_list ) ; 
+USAGE struct __getopt_usage_t* init_( struct option * __opt , int size  ,char * const * __description_list ) ; 
 
 /** good naming Macro shortcut*/
 #define  init_no_desc    init 
 #define  init_with_desc  init_ 
 
-/** @fn extern inline void endof_getoptusage ( struct __getopt_usage_t  *  __goptu ) 
- *  @brief release allocated resources
- *  **after using  init_ or init  please call  this function  to avoid memory linkage **
- *  @param struct __getopt_usage_t  *  
- */ 
-extern  inline void __nonull  endof_getoptusage  ( struct __getopt_usage_t *  __restrict__   __goptu  ) {
-   if(__goptu  == _nullable) return  ;   
-   free(__goptu) ; 
-} 
+USAGE extern int  __pure usage_get_size_optionslist( int size  )  { 
+  return size  ; 
+}
 
+void  __destroy usage_free(void) ; 
 
 /**  @fn void dump_desclist ( struct __getopt_usage_t * , char *const *  )  
  *   @brief dump description list  in  getoptusage structure 
@@ -153,7 +156,7 @@ extern  inline void __nonull  endof_getoptusage  ( struct __getopt_usage_t *  __
 void dump_desclist ( struct  __getopt_usage_t  * goptu  ,    char  * const *desclist ) ; 
 
 
-char * get_shortopt(struct  __getopt_usage_t * goptu) ;  
+USAGE char *  __nonull __must_check get_shortopt(struct  __getopt_usage_t * goptu) ;  
 
 
 static int  usage_check  (struct __getopt_usage_t *  __goptu  ,  char  * const * __description_list)  ; 
@@ -161,12 +164,12 @@ static int  usage_check  (struct __getopt_usage_t *  __goptu  ,  char  * const *
 /** @fn  show_usage (struct __getopt_usage_t *)  
  *  @brief print  description list dumped on gopt_usage_t 
  */ 
-void show_usage (struct __getopt_usage_t *  __goptu ,  char * const *  __argv , int __synopsis_stat ) __nonull; 
+USAGE void __nonull show_usage (struct __getopt_usage_t *  __goptu ,  char * const *  __argv , int __synopsis_stat ) ; 
 
 static char __nonull switch_condition (  int __synopsis_status ,  int * index   , int const refcount) ; 
 
-void show_usage_with_synopsis( struct __getopt_usage_t * __goptu  , char *const * __argv) ; 
-void show_usage_no_synopsis(struct __getopt_usage_t * __goptu, char *const * __argv);
+USAGE void __nonull show_usage_with_synopsis( struct __getopt_usage_t * __goptu  , char *const * __argv) ; 
+USAGE void __nonull show_usage_no_synopsis(struct __getopt_usage_t * __goptu, char *const * __argv);
 
 #define show_usage_ws show_usage_with_synopsis  
 #define show_usage_ns show_usage_no_synopsis 
@@ -175,8 +178,8 @@ void show_usage_no_synopsis(struct __getopt_usage_t * __goptu, char *const * __a
 //char *retrive_shortopt(struct __getopt_usage_t * __goptu)
 
 /** @brief basename program  manipulation to prettyfy */ 
-static char *   root_basename (char  *const *  __argv ,char *__restrict__   __dumper) __must_check  ; 
-static char *   fds_basename (char *basename) __must_check ; 
+USAGE static char *  __must_check  root_basename (char  *const *  __argv ,char *__restrict__   __dumper)  ; 
+USAGE static char *  __must_check  fds_basename (char *basename) ; 
 
 
 #ifdef __cplusplus 

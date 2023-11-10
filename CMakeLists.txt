@@ -4,6 +4,17 @@ project(usage  VERSION 1.0  DESCRIPTION "Simple library to build helper command 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
+#--- 
+# Should be remove befor the release  
+add_subdirectory(example)
+
+#--- 
+
+option(USAGE_AUTOFREE "Auto free  allocated memory"  ON) 
+if(USAGE_AUTOFREE)
+  message(STATUS  " <LIBUSAGE> ++Auto free enable")
+  add_definitions(-DUSAGE_AUTO_DEALOCATE) 
+endif() 
 file(GLOB_RECURSE  src  src/*) 
 file(GLOB_RECURSE  hdr  include/*) 
 

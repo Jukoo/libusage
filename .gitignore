@@ -53,3 +53,4 @@ dkms.conf
 build/
 example/dist/
 example/build  
+callgrind.out.* 

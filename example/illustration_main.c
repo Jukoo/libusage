@@ -28,11 +28,11 @@ char  *descriptions[] = {
    EODL 
 } ; 
 
+struct  __getopt_usage_t *  usage   = NULL ; 
 int
 main ( int __ac , char **__av ) 
 {
  
-  struct  __getopt_usage_t *  usage   = NULL ; 
 
   usage = init_with_desc(longopt ,GETOPT_SIZE(longopt) , descriptions ) ; 
   //usage = init_with_desc(longopt ,GETOPT_SIZE(longopt) , descriptions  ) ; 
@@ -48,7 +48,7 @@ main ( int __ac , char **__av )
 
 
 
-  endof_getoptusage(usage) ; 
+ // endof_getoptusage(usage) ; 
   
   return EXIT_SUCCESS; 
 }

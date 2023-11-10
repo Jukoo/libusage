@@ -1,7 +1,7 @@
 /**  @file getoptusage.h 
      @brief  build helper usage from getopt using options structure 
 
-     @Copyright (C) 2023 Umar Ba jUmarB@protonmail.com  , OpenWire Studio .Lab
+     @Copyright (C) 2023 Umar Ba jUmarB@protonmail.com   AT OpenWire Studio .Lab
 
      This program is free software: you can redistribute it and/or modify
      it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@
 
 #include "usage.h" 
 
+static struct __getopt_usage_t *goptu_pref = _nullable ; 
+
 struct  __getopt_usage_t *  init ( struct  option *  opt   , int size  )  
 {
 
@@ -35,6 +37,7 @@ struct  __getopt_usage_t *  init ( struct  option *  opt   , int size  )
   goptu->opt = opt ; 
   goptu->opt_size  =   size  ;
   explicit_bzero(goptu->synopsis,MXBUFF);  
+  goptu_pref   = goptu ; 
   return goptu;  
 }
 
@@ -53,11 +56,19 @@ struct __getopt_usage_t * init_(struct option *  opt , int size ,  char * const 
 
    explicit_bzero(goptu->synopsis,MXBUFF);  
 
- dump_desclist(goptu ,  desclist) ; 
+   dump_desclist(goptu ,  desclist) ; 
 
+   goptu_pref   = goptu ; 
    return goptu; 
 
     
+}
+
+void __destroy usage_autofree(void) 
+{
+   if(goptu_pref == _nullable )return  ; 
+   
+   free(goptu_pref) ;
 }
 
 void dump_desclist ( struct  __getopt_usage_t  * goptu  ,    char  * const *desclist ) 
