@@ -10,6 +10,8 @@
 
 #include "usage.h"  
 //see man page of  getopt 
+
+
 struct option longopt [] ={
   {"help" , no_argument, 0  , 'h'} , 
   {"version" , no_argument , 0   , 'v'}, 
@@ -28,12 +30,12 @@ char  *descriptions[] = {
    EODL 
 } ; 
 
-struct  __getopt_usage_t *  usage   = NULL ; 
 int
 main ( int __ac , char **__av ) 
 {
  
 
+struct  __getopt_usage_t *  usage   = NULL ; 
   usage = init_with_desc(longopt ,GETOPT_SIZE(longopt) , descriptions ) ; 
   //usage = init_with_desc(longopt ,GETOPT_SIZE(longopt) , descriptions  ) ; 
   if( usage == NULL ) 
@@ -41,10 +43,10 @@ main ( int __ac , char **__av )
      perror("usage init error") ; 
   }
 
-  char *sopt = get_shortopt(usage) ; 
+  char *sopt = usage_get_shortopt(usage) ; 
   
   printf("shortoption -> %s \n" , sopt) ; 
-  show_usage_no_synopsis(usage , __av) ; 
+  usage_ns(usage , __av) ; 
 
 
 

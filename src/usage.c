@@ -27,7 +27,7 @@
 
 static struct __getopt_usage_t *goptu_pref = _nullable ; 
 
-struct  __getopt_usage_t *  init ( struct  option *  opt   , int size  )  
+struct  __getopt_usage_t *  usage_init ( struct  option *  opt   , int size  )  
 {
 
   if ( opt ==  _nullable)  return  _nullable ;  
@@ -42,12 +42,12 @@ struct  __getopt_usage_t *  init ( struct  option *  opt   , int size  )
 }
 
 
-struct __getopt_usage_t * init_(struct option *  opt , int size ,  char * const *  desclist)  
+struct __getopt_usage_t * usage_init_(struct option *  opt , int size ,  char * const *  desclist)  
 {
 
    if (desclist == _nullable)  
    { 
-     return init(opt  , size) ; 
+     return usage_init(opt  , size) ; 
    } 
 
    struct __getopt_usage_t *  goptu = (struct __getopt_usage_t *) malloc(sizeof(*goptu)) ; 
@@ -56,7 +56,7 @@ struct __getopt_usage_t * init_(struct option *  opt , int size ,  char * const 
 
    explicit_bzero(goptu->synopsis,MXBUFF);  
 
-   dump_desclist(goptu ,  desclist) ; 
+   usage_register_descriptions(goptu ,  desclist) ; 
 
    goptu_pref   = goptu ; 
    return goptu; 
@@ -71,7 +71,7 @@ void __destroy usage_autofree(void)
    free(goptu_pref) ;
 }
 
-void dump_desclist ( struct  __getopt_usage_t  * goptu  ,    char  * const *desclist ) 
+void   usage_register_descriptions( struct  __getopt_usage_t  * goptu  ,    char  * const *desclist ) 
 {
   int  desclist_index = 0 ;
   if ( desclist ==  _nullable ) return ; 
@@ -101,20 +101,31 @@ void dump_desclist ( struct  __getopt_usage_t  * goptu  ,    char  * const *desc
 
 static int usage_check (struct __getopt_usage_t  * gopt  , char * const *desclist) 
 {
-  int description_list_size  =  0 ; 
-  while (1)  
-  { 
-    if (strlen(desclist[description_list_size]) ==  0  ||  desclist == _nullable)break ; 
-    description_list_size++ ; 
+  int description_list_size  =   usage_get_sizeof_descriptions(desclist) ; 
+  
+  if(description_list_size == ~0) 
+  {
+    return description_list_size ; 
   }
-
-  printf("description list item size %i \n" ,  description_list_size) ; 
 
   return abs(gopt->opt_size -  description_list_size)  ; 
 
 }
 
-char * get_shortopt ( struct __getopt_usage_t * goptu )  
+
+static int usage_get_sizeof_descriptions(char * const *  description_list)  
+{ 
+  static int index = 0 ; 
+  if (description_list[index] == _nullable) 
+  {
+    return  index -1  ;
+  }
+  index++ ;  
+  usage_get_sizeof_descriptions(description_list) ;  
+}
+
+
+char * usage_get_shortopt ( struct __getopt_usage_t * goptu )  
 {
    if (goptu == _nullable) return  _nullable ; 
   
@@ -149,7 +160,7 @@ char * get_shortopt ( struct __getopt_usage_t * goptu )
 
 
 void
-show_usage( struct __getopt_usage_t * goptu , char * const *  argv , int synopsis)  
+usage_show( struct __getopt_usage_t * goptu , char * const *  argv , int synopsis)  
 {
    if (goptu == _nullable)   
    {
@@ -197,19 +208,18 @@ static  char switch_condition(int synopsis_status , int *index, const int refcou
    if (synopsis_status ==  GETOPT_SYNOPSIS_OFF) 
      return  __get_ccgsyn(GETOPT_SYNOPSIS_OFF ,  *index , refcount) ; 
 
-  
    return __get_ccgsyn(GETOPT_SYNOPSIS_ON , *index , refcount) ; 
 }
 
 
-void show_usage_no_synopsis(struct __getopt_usage_t *  goptu  , char *const * argv)  
+void usage_no_synopsis(struct __getopt_usage_t *  goptu  , char *const * argv)  
 {
-  show_usage(goptu , argv ,  GETOPT_SYNOPSIS_OFF) ; 
+  usage_show(goptu , argv ,  GETOPT_SYNOPSIS_OFF) ; 
 }
 
-void show_usage_with_synopsis(struct __getopt_usage_t * goptu , char *const * argv ) 
+void usage_with_synopsis(struct __getopt_usage_t * goptu , char *const * argv ) 
 {
-  show_usage(goptu , argv , GETOPT_SYNOPSIS_ON) ; 
+  usage_show(goptu , argv , GETOPT_SYNOPSIS_ON) ; 
 }
 
 static char * __must_check  root_basename (char * const * argv ,  char  * restrict rb_dump ) 

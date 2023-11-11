@@ -68,11 +68,13 @@ enum {
 } ;
 
 
-#define _end_of_description_list_marker  "" 
-#define EODL  _end_of_description_list_marker 
 
-#define _end_of_description_list_marker_p  _Nullable 
-#define EODL_P _end_of_description_list_marker_p  
+enum USAGE_EODL { 
+   EODL , 
+#define  EODL  "" 
+   EODL_P
+#define  EODL_P  _nullable 
+};  
 
 
 /** Dealing with synopsis  just right after  the command usage : 
@@ -102,7 +104,6 @@ enum  {
 enum {
   /** basename too long */ 
   BN2LONG = ~22 , 
-  
   /** getoptusage init failure*/
   GINFAIL
   
@@ -127,7 +128,7 @@ struct __getopt_usage_t {
  *  @param   int size  :!NOTE: you'd better  user GETOPT_SIZE() macro  to get the size of  options
  *  @return  struct  __getopt_usage_t  *
  */ 
-USAGE struct __getopt_usage_t* init( struct option * __opt , int size );
+USAGE struct __getopt_usage_t* usage_init( struct option * __opt , int size );
 
 /** @fn  struct __getopt_usage_t * init_(struct option * , int size , char * const * dl)
  *  @brief like the init function above +  dump_desclist to feed  opt_desc 
@@ -136,15 +137,17 @@ USAGE struct __getopt_usage_t* init( struct option * __opt , int size );
  *  @param   char * const *  dl  when (void *) 0 or NULL the init function above is used by default   
  *  @return  struct  __getopt_usage_t  *
  */ 
-USAGE struct __getopt_usage_t* init_( struct option * __opt , int size  ,char * const * __description_list ) ; 
+USAGE struct __getopt_usage_t* usage_init_( struct option * __opt , int size  ,char * const * __description_list ) ; 
 
 /** good naming Macro shortcut*/
-#define  init_no_desc    init 
-#define  init_with_desc  init_ 
+#define  init_no_desc    usage_init 
+#define  init_with_desc  usage_init_ 
 
 USAGE extern int  __pure usage_get_size_optionslist( int size  )  { 
   return size  ; 
 }
+
+USAGE   static int usage_get_sizeof_descriptions(char* const  * __description_list)  ;
 
 void  __destroy usage_free(void) ; 
 
@@ -153,10 +156,10 @@ void  __destroy usage_free(void) ;
  *   @param  __getopt_usage_t * 
  *   @param  char * const *  
  */
-void dump_desclist ( struct  __getopt_usage_t  * goptu  ,    char  * const *desclist ) ; 
+USAGE  void  usage_register_descriptions( struct  __getopt_usage_t  * goptu  ,    char  * const *desclist ) ; 
 
 
-USAGE char *  __nonull __must_check get_shortopt(struct  __getopt_usage_t * goptu) ;  
+USAGE char *  __nonull __must_check usage_get_shortopt(struct  __getopt_usage_t * goptu) ;  
 
 
 static int  usage_check  (struct __getopt_usage_t *  __goptu  ,  char  * const * __description_list)  ; 
@@ -164,21 +167,21 @@ static int  usage_check  (struct __getopt_usage_t *  __goptu  ,  char  * const *
 /** @fn  show_usage (struct __getopt_usage_t *)  
  *  @brief print  description list dumped on gopt_usage_t 
  */ 
-USAGE void __nonull show_usage (struct __getopt_usage_t *  __goptu ,  char * const *  __argv , int __synopsis_stat ) ; 
+USAGE void __nonull usage_show (struct __getopt_usage_t *  __goptu ,  char * const *  __argv , int __synopsis_stat ) ; 
 
 static char __nonull switch_condition (  int __synopsis_status ,  int * index   , int const refcount) ; 
 
-USAGE void __nonull show_usage_with_synopsis( struct __getopt_usage_t * __goptu  , char *const * __argv) ; 
-USAGE void __nonull show_usage_no_synopsis(struct __getopt_usage_t * __goptu, char *const * __argv);
+USAGE void __nonull usage_with_synopsis( struct __getopt_usage_t * __goptu  , char *const * __argv) ; 
+USAGE void __nonull usage_no_synopsis(struct __getopt_usage_t * __goptu, char *const * __argv);
 
-#define show_usage_ws show_usage_with_synopsis  
-#define show_usage_ns show_usage_no_synopsis 
+#define usage_ws  usage_with_synopsis  
+#define usage_ns  usage_no_synopsis 
 
-//build  shortoption from strct option
-//char *retrive_shortopt(struct __getopt_usage_t * __goptu)
 
 /** @brief basename program  manipulation to prettyfy */ 
 USAGE static char *  __must_check  root_basename (char  *const *  __argv ,char *__restrict__   __dumper)  ; 
+
+//! just reformat basename  programme when it start  with "./"
 USAGE static char *  __must_check  fds_basename (char *basename) ; 
 
 
