@@ -35,9 +35,8 @@ main ( int __ac , char **__av )
 {
  
 
-struct  __getopt_usage_t *  usage   = NULL ; 
+  struct  __getopt_usage_t *  usage   = NULL ; 
   usage = init_with_desc(longopt ,GETOPT_SIZE(longopt) , descriptions ) ; 
-  //usage = init_with_desc(longopt ,GETOPT_SIZE(longopt) , descriptions  ) ; 
   if( usage == NULL ) 
   {
      perror("usage init error") ; 
@@ -50,7 +49,6 @@ struct  __getopt_usage_t *  usage   = NULL ;
 
 
 
- // endof_getoptusage(usage) ; 
   
   return EXIT_SUCCESS; 
 }

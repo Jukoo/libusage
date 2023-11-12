@@ -19,16 +19,17 @@
 #if !defined  (GETOPT_USAGE_H) 
 #define        GETOPT_USAGE_H 1 
 
-#define  USAGE  
+#include <bits/getopt_ext.h>
+#include <bits/types.h>
 
-#include <bits/getopt_ext.h> 
+#define  USAGE  
 
 #ifdef __cplusplus
 extern "C"  {   
 #endif 
 
 #define   MXBUFF 0xff
-#define   RBN_MXBUFF ( MXBUFF >> 4 )
+#define   RBN_MXBUFF ( MXBUFF >> 4) //root basename maximum or limit 
 
 #define  _nullable   ( (void *) (0UL << 1) )   
 #define  __void0h  _nullable    
@@ -48,10 +49,17 @@ extern "C"  {
 #ifdef  USAGE_AUTO_DEALOCATE
 /** ! when it define no need to call  dealocate procedure 
  *  ! **/
-#define  __destroy  __attribute__((destructor))
-#else 
-#define  __destroy 
-#endif 
+  #if __has_attribute(__destructor__) 
+    #define  __destroy  __attribute__((destructor))
+  #else  
+    #define __destroy 
+  #endif
+
+#else  
+#define __destroy 
+#endif  /*! USAGE_AUTO_DEALOCATE */
+
+
 #define  __ulog(__mesg ,  ... )  \
   fprintf(stdout  , __mesg , ##__VA_ARGS__) ;  
 
@@ -102,12 +110,22 @@ enum  {
 
 /**General errors*/
 enum {
-  /** basename too long */ 
-  BN2LONG = ~22 , 
-  /** getoptusage init failure*/
-  GINFAIL
-  
-}; 
+  BN2LONG = ~9 ,
+#define mesg_BN2LONG   "basename too long"
+  GINFAIL , 
+#define  mesg_GINFAIL  "usage init error" 
+USAGE_NO_SYNC,
+  #define  mesg_USAGE_NO_SYNC " Usage  option and descriptions lire  are not synced"
+USAGE_SYNC= 0
+
+};
+
+#define  uerr(error) \
+  errx(error , "%s\n" , mesg_##error); 
+
+#define  uwarn(error)\
+  warn(mesg_##error); 
+
    
 typedef  struct  __getopt_usage_t  gopt_usage_t  ; 
 struct __getopt_usage_t { 
@@ -119,9 +137,12 @@ struct __getopt_usage_t {
   
   //@TODO : make a function  that return cmpcheck_between_optndesc 
   //--- i should change the name 
-  int  cmpcheck_between_optndesc ; 
+  __u_char usage_sync; 
 
 } ;
+
+
+USAGE  static int   usage_sync_matched(struct __getopt_usage_t *  __restrict__ _goptu , int  __reference) __nonullx(1) ; 
 /** @fn  struct __getopt_usage_t  * init (struct option *   , int size )   
  *  @brief initialize  getoptusage struct 
  *  @param   struct option * 

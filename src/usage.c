@@ -71,6 +71,18 @@ void __destroy usage_autofree(void)
    free(goptu_pref) ;
 }
 
+
+static int usage_sync_matched ( struct __getopt_usage_t *  restrict  goptu , int ref ) 
+{  
+  if (goptu->usage_sync != ref) 
+  {
+     uwarn(USAGE_NO_SYNC) ;  
+     return  USAGE_NO_SYNC;  
+  }
+
+  return  USAGE_SYNC ; 
+}
+
 void   usage_register_descriptions( struct  __getopt_usage_t  * goptu  ,    char  * const *desclist ) 
 {
   int  desclist_index = 0 ;
@@ -80,13 +92,10 @@ void   usage_register_descriptions( struct  __getopt_usage_t  * goptu  ,    char
   // check if goptu->opt_size and desclist size  are same lenght 
   // if it's the case   use  < otherwise  <= 
   //
-  int  syncmp  =  usage_check(goptu , desclist) ; 
-  printf("sync comparator -> %i\n" , syncmp) ; 
 
-  goptu->cmpcheck_between_optndesc = syncmp  ; 
-  syncmp =  syncmp  == 1  ? GETOPT_SYNOPSIS_ON :  GETOPT_SYNOPSIS_OFF; 
+  goptu->usage_sync = usage_check(goptu,  desclist) ;
 
-  while (switch_condition(syncmp,&desclist_index ,  goptu->opt_size) )  
+  while (switch_condition(goptu->usage_sync,&desclist_index ,  goptu->opt_size) )  
   {
     memcpy (
         (goptu->opt_desc+desclist_index) , 
@@ -102,12 +111,12 @@ void   usage_register_descriptions( struct  __getopt_usage_t  * goptu  ,    char
 static int usage_check (struct __getopt_usage_t  * gopt  , char * const *desclist) 
 {
   int description_list_size  =   usage_get_sizeof_descriptions(desclist) ; 
-  
+ 
   if(description_list_size == ~0) 
   {
     return description_list_size ; 
   }
-
+  
   return abs(gopt->opt_size -  description_list_size)  ; 
 
 }
@@ -120,7 +129,7 @@ static int usage_get_sizeof_descriptions(char * const *  description_list)
   {
     return  index -1  ;
   }
-  index++ ;  
+  index++ ;
   usage_get_sizeof_descriptions(description_list) ;  
 }
 
@@ -196,10 +205,8 @@ usage_show( struct __getopt_usage_t * goptu , char * const *  argv , int synopsi
       fprintf(stdout, ": %-10s\n", goptu->opt_desc[index]);
       index++ ;  
    }
-   if (  goptu->cmpcheck_between_optndesc != synopsis)  
-   {
-     puts("Warning!") ;  
-   }
+    
+   usage_sync_matched(goptu, synopsis) ;  
 }
 
 //! TODO : choose an adequate name like : condition_change or comparator_condition_change lt_or_le_con ... whatever ... 
@@ -228,7 +235,7 @@ static char * __must_check  root_basename (char * const * argv ,  char  * restri
    
   if (strlen(localbasname) >  RBN_MXBUFF)    
   {
-     errx(BN2LONG,  "root basename too long !"); 
+     uerr(BN2LONG) ;  
   }
 
   fds_basename(localbasname) ;  
