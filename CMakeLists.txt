@@ -10,11 +10,20 @@ add_subdirectory(example)
 
 #--- 
 
-option(USAGE_AUTOFREE "Auto free  allocated memory"  ON) 
+option(USAGE_AUTOFREE "Auto free  allocated memory"  ON)
+option(USAGE_BN_CTLR   "Restrict the basename programme  in certain lenght" OFF)  
+
 if(USAGE_AUTOFREE)
   message(STATUS  " <LIBUSAGE> ++Auto free enable")
   add_definitions(-DUSAGE_AUTO_DEALOCATE) 
 endif() 
+
+if(USAGE_BN_CTLR)  
+  message(STATUS "<LIBUSAGE> ++ Basename lenght Restriction enabled") 
+  add_definitions(-DUSAGE_RESTRICT_BASENAME) 
+endif() 
+
+
 file(GLOB_RECURSE  src  src/*) 
 file(GLOB_RECURSE  hdr  include/*) 
 

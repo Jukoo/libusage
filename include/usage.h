@@ -28,8 +28,17 @@
 extern "C"  {   
 #endif 
 
-#define   MXBUFF 0xff
-#define   RBN_MXBUFF ( MXBUFF >> 4) //root basename maximum or limit 
+#ifndef   USAGE_MXBUFF 
+  #define   MXBUFF 0xff
+#else  
+  #define   MXBUFF USAGE_MXBUFF 
+#endif 
+
+#ifdef    USAGE_RESTRICT_BASENAME
+  #define   RBN_MXBUFF 0x14
+#else  
+  #define   RBN_MXBUFF MXBUFF 
+#endif 
 
 #define  _nullable   ( (void *) (0UL << 1) )   
 #define  __void0h  _nullable    
@@ -104,21 +113,28 @@ enum  {
 #define  __condcheck_GETOPT_SYNOPSIS_ON(_x,_y)  _x <= _y 
 #define  __condcheck_GETOPT_SYNOPSIS_OFF(_x,_y) _x < _y
 
-
 #define __get_ccgsyn(__synopsis_attr , x ,y) __condcheck_##__synopsis_attr(x,y)  
 
 
 /**General errors*/
 enum {
-  BN2LONG = ~9 ,
-#define mesg_BN2LONG   "basename too long"
-  GINFAIL , 
-#define  mesg_GINFAIL  "usage init error" 
+  USAGE_BN2LONG = ~9 ,
+#define mesg_USAGE_BN2LONG   "basename too long :"
+  USAGE_GINFAIL , 
+#define  mesg_USAGE_GINFAIL  "usage init error :" 
 USAGE_NO_SYNC,
-  #define  mesg_USAGE_NO_SYNC " Usage  option and descriptions lire  are not synced"
+  #define  mesg_USAGE_NO_SYNC " Usage  option and descriptions lire  are not synced :"
 USAGE_SYNC= 0
 
 };
+
+#define  uerr_c(error , static_mesg )  ({\
+    char internal_mesg[MXBUFF] = mesg_##error  ;\
+    char *s= static_mesg ; \
+    strcat(internal_mesg , s) ; \
+    errx(error , "%s\n", internal_mesg);}) 
+
+
 
 #define  uerr(error) \
   errx(error , "%s\n" , mesg_##error); 

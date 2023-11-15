@@ -38,6 +38,7 @@ struct  __getopt_usage_t *  usage_init ( struct  option *  opt   , int size  )
   goptu->opt_size  =   size  ;
   explicit_bzero(goptu->synopsis,MXBUFF);  
   goptu_pref   = goptu ; 
+
   return goptu;  
 }
 
@@ -46,9 +47,8 @@ struct __getopt_usage_t * usage_init_(struct option *  opt , int size ,  char * 
 {
 
    if (desclist == _nullable)  
-   { 
      return usage_init(opt  , size) ; 
-   } 
+
 
    struct __getopt_usage_t *  goptu = (struct __getopt_usage_t *) malloc(sizeof(*goptu)) ; 
    goptu->opt = opt ; 
@@ -74,8 +74,8 @@ void __destroy usage_autofree(void)
 
 static int usage_sync_matched ( struct __getopt_usage_t *  restrict  goptu , int ref ) 
 {  
-  if (goptu->usage_sync != ref) 
-  {
+  if (goptu->usage_sync != ref) {
+
      uwarn(USAGE_NO_SYNC) ;  
      return  USAGE_NO_SYNC;  
   }
@@ -95,8 +95,8 @@ void   usage_register_descriptions( struct  __getopt_usage_t  * goptu  ,    char
 
   goptu->usage_sync = usage_check(goptu,  desclist) ;
 
-  while (switch_condition(goptu->usage_sync,&desclist_index ,  goptu->opt_size) )  
-  {
+  while (switch_condition(goptu->usage_sync,&desclist_index ,  goptu->opt_size) ){ 
+
     memcpy (
         (goptu->opt_desc+desclist_index) , 
         desclist[desclist_index] ,
@@ -112,10 +112,8 @@ static int usage_check (struct __getopt_usage_t  * gopt  , char * const *desclis
 {
   int description_list_size  =   usage_get_sizeof_descriptions(desclist) ; 
  
-  if(description_list_size == ~0) 
-  {
+  if(description_list_size == ~0)
     return description_list_size ; 
-  }
   
   return abs(gopt->opt_size -  description_list_size)  ; 
 
@@ -125,10 +123,11 @@ static int usage_check (struct __getopt_usage_t  * gopt  , char * const *desclis
 static int usage_get_sizeof_descriptions(char * const *  description_list)  
 { 
   static int index = 0 ; 
-  if (description_list[index] == _nullable) 
-  {
+  
+  if (description_list[index] == _nullable){
     return  index -1  ;
   }
+
   index++ ;
   usage_get_sizeof_descriptions(description_list) ;  
 }
@@ -142,10 +141,11 @@ char * usage_get_shortopt ( struct __getopt_usage_t * goptu )
    
    int index  =0 ; 
    int j_index=0 ; 
-   while ( index <=  goptu->opt_size ) 
-   {
-     switch (goptu->opt[index].has_arg) 
-     {
+  
+   while ( index <=  goptu->opt_size ) {
+
+     switch (goptu->opt[index].has_arg){
+
        case  no_argument :  
          memset((goptu->shopt+j_index) ,  goptu->opt[index].val , 1) ; 
          break ; 
@@ -171,14 +171,14 @@ char * usage_get_shortopt ( struct __getopt_usage_t * goptu )
 void
 usage_show( struct __getopt_usage_t * goptu , char * const *  argv , int synopsis)  
 {
-   if (goptu == _nullable)   
-   {
-     errx(GINFAIL ,"nil <nothing to show>") ; 
+   if (goptu == _nullable){
+
+     uerr_c(USAGE_GINFAIL ,"nil <nothing to show>") ; 
    }
  
-   char rbasename[RBN_MXBUFF] = {0}  ;
-   if ( argv !=  _nullable)  
-   {
+   char rbasename[RBN_MXBUFF] = {0} ;
+   if ( argv !=  _nullable) {
+
      (void*) root_basename(argv ,  rbasename); 
 #ifdef  basename 
      memcpy(rbasename , __xpg_basename(rbasename)  , strlen(rbasename)) ; 
@@ -190,8 +190,8 @@ usage_show( struct __getopt_usage_t * goptu , char * const *  argv , int synopsi
    int index  = 0 ;
    int index_options = 0 ; 
    
-   if (synopsis == GETOPT_SYNOPSIS_ON ) 
-   {
+   if (synopsis == GETOPT_SYNOPSIS_ON ){
+
      memcpy(goptu->synopsis ,  goptu->opt_desc[index] , MXBUFF) ; 
      index++ ; 
      fprintf(stdout ,  "\t%s\n" ,  goptu->synopsis); 
@@ -199,8 +199,7 @@ usage_show( struct __getopt_usage_t * goptu , char * const *  argv , int synopsi
    }
    
    __ulog("%s\n", "Options :") ;
-   while(switch_condition(synopsis,  &index , goptu->opt_size ))  
-   {
+   while(switch_condition(synopsis,  &index , goptu->opt_size )){
      fprintf(stdout  , "::\t-%-1c, --%-2s\t" ,  goptu->opt[index - index_options].val ,  goptu->opt[index-index_options].name); 
       fprintf(stdout, ": %-10s\n", goptu->opt_desc[index]);
       index++ ;  
@@ -232,14 +231,18 @@ void usage_with_synopsis(struct __getopt_usage_t * goptu , char *const * argv )
 static char * __must_check  root_basename (char * const * argv ,  char  * restrict rb_dump ) 
 {
   char *localbasname =(char *) (*argv+0) ; 
-   
-  if (strlen(localbasname) >  RBN_MXBUFF)    
-  {
-     uerr(BN2LONG) ;  
+  
+  fds_basename(localbasname) ;  
+#ifdef USAGE_RESTRICT_BASENAME 
+  if (strlen(localbasname) >  RBN_MXBUFF){
+     uerr(USAGE_BN2LONG) ;  
   }
 
-  fds_basename(localbasname) ;  
   memcpy(rb_dump , (localbasname) ,  RBN_MXBUFF) ; 
+#else 
+  memcpy(rb_dump , (localbasname) ,  strlen(localbasname)) ;  
+#endif 
+ 
   return rb_dump ; 
   
 }
@@ -249,8 +252,8 @@ static char * __must_check fds_basename  (  char *basename )
 {
   char dot_start = 0x2e ;
    /** looking  for  './'*/
-  if ( (*basename+0) ==dot_start  &&  (*basename+1) ==  dot_start++) 
-  {
+  if ( (*basename+0) ==dot_start  &&  (*basename+1) ==  dot_start++){
+
     return memcpy(basename ,   (basename+2) , strlen(basename)) ; 
   } 
   
