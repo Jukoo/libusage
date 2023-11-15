@@ -11,7 +11,7 @@ add_subdirectory(example)
 #--- 
 
 option(USAGE_AUTOFREE "Auto free  allocated memory"  ON)
-option(USAGE_BN_CTLR   "Restrict the basename programme  in certain lenght" OFF)  
+option(USAGE_BN_CTLR   "Restrict the basename programme  in certain lenght" ON)  
 
 if(USAGE_AUTOFREE)
   message(STATUS  " <LIBUSAGE> ++Auto free enable")

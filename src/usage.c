@@ -1,7 +1,7 @@
 /**  @file getoptusage.h 
      @brief  build helper usage from getopt using options structure 
 
-     @Copyright (C) 2023 Umar Ba jUmarB@protonmail.com   AT OpenWire Studio .Lab
+     @Copyright (C) 2023 Umar Ba jUmarB@protonmail.com   AT OpenWire Studio .HomeLab
 
      This program is free software: you can redistribute it and/or modify
      it under the terms of the GNU General Public License as published by
@@ -72,9 +72,9 @@ void __destroy usage_autofree(void)
 }
 
 
-static int usage_sync_matched ( struct __getopt_usage_t *  restrict  goptu , int ref ) 
+static int usage_sync_matched ( struct __getopt_usage_t *  restrict  goptu , int  synopsis_stat  ) 
 {  
-  if (goptu->usage_sync != ref) {
+  if (goptu->usage_sync != synopsis_stat ) {
 
      uwarn(USAGE_NO_SYNC) ;  
      return  USAGE_NO_SYNC;  
@@ -87,11 +87,6 @@ void   usage_register_descriptions( struct  __getopt_usage_t  * goptu  ,    char
 {
   int  desclist_index = 0 ;
   if ( desclist ==  _nullable ) return ; 
-
-  // FIXME :TODO 
-  // check if goptu->opt_size and desclist size  are same lenght 
-  // if it's the case   use  < otherwise  <= 
-  //
 
   goptu->usage_sync = usage_check(goptu,  desclist) ;
 
@@ -125,7 +120,7 @@ static int usage_get_sizeof_descriptions(char * const *  description_list)
   static int index = 0 ; 
   
   if (description_list[index] == _nullable) {
-    return  index -1  ;
+    return  index  +(~0)  ;
   }
 
   index++ ;
@@ -155,7 +150,7 @@ char * usage_get_shortopt ( struct __getopt_usage_t * goptu )
          memset((goptu->shopt+j_index) ,  0x3a, 1) ;
          break ; 
        case optional_argument : 
-         //! no supported yet 
+         //! no supported yet :TODO: LATER !!  
          break ; 
      
      }
@@ -208,7 +203,6 @@ usage_show( struct __getopt_usage_t * goptu , char * const *  argv , int synopsi
    usage_sync_matched(goptu, synopsis) ;  
 }
 
-//! TODO : choose an adequate name like : condition_change or comparator_condition_change lt_or_le_con ... whatever ... 
 static  char switch_condition(int synopsis_status , int *index, const int refcount) 
 {
    if (synopsis_status ==  GETOPT_SYNOPSIS_OFF) 
@@ -251,6 +245,7 @@ static char * __must_check  root_basename (char * const * argv ,  char  * restri
 static char * __must_check fds_basename  (  char *basename ) 
 {
   char dot_start = 0x2e ;
+
    /** looking  for  './'*/
   if ( (*basename+0) ==dot_start  &&  (*basename+1) ==  dot_start++){
 
