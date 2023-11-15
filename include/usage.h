@@ -128,22 +128,31 @@ USAGE_SYNC= 0
 
 };
 
-#define  uerr_c(error , static_mesg )  ({\
-    char internal_mesg[MXBUFF] = mesg_##error  ;\
-    char *s= static_mesg ; \
-    strcat(internal_mesg , s) ; \
-    errx(error , "%s\n", internal_mesg);}) 
-
-
-
 #define  uerr(error) \
   errx(error , "%s\n" , mesg_##error); 
+
+#define  uerr_c(error , static_mesg )  ({\
+    char  _i[MXBUFF] = mesg_##error  ;\
+    char *_s = static_mesg ; \
+    strcat(_i , _s) ; \
+    errx(error , "%s\n", _i);\
+    }) 
+
 
 #define  uwarn(error)\
   warn(mesg_##error); 
 
+#define  uwarn_c(error , static_mesg )  ({\
+    char  _i[MXBUFF] = mesg_##error  ;\
+    char *_s = static_mesg ; \
+    strcat(_i , _s) ; \
+    warn("%s\n", _i);\
+    }) 
+
+
    
-typedef  struct  __getopt_usage_t  gopt_usage_t  ; 
+typedef  struct  __getopt_usage_t  gopt_usage_t  ;
+
 struct __getopt_usage_t { 
   struct option *  opt ; 
   int opt_size  ; 
@@ -180,9 +189,6 @@ USAGE struct __getopt_usage_t* usage_init_( struct option * __opt , int size  ,c
 #define  init_no_desc    usage_init 
 #define  init_with_desc  usage_init_ 
 
-USAGE extern int  __pure usage_get_size_optionslist( int size  )  { 
-  return size  ; 
-}
 
 USAGE   static int usage_get_sizeof_descriptions(char* const  * __description_list)  ;
 

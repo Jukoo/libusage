@@ -124,7 +124,7 @@ static int usage_get_sizeof_descriptions(char * const *  description_list)
 { 
   static int index = 0 ; 
   
-  if (description_list[index] == _nullable){
+  if (description_list[index] == _nullable) {
     return  index -1  ;
   }
 
