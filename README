@@ -1,0 +1,24 @@
+-- README for libusage - a help usage builder.  
+-- Copyright (c) 2023 by Umar Ba, jUmarB@protonmail.com 
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+--  (See the full license text in LICENSE file)
+
+libusage is a small library that helps you build your usage display quickly and dynamically,
+so you don't get bogged down with a bunch of #define . 
+Just have a look at the example directory to see how it can be used.
+
+Maybe it'll suit your needs 
+
+* This  programme is not part of GNU C Library *
+
+-- Happy Hacking Folks ! 
