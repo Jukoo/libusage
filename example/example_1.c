@@ -1,6 +1,6 @@
 /** This is a simple illustration  of how to use libusage 
  *  ---It's not the only way to use it ---
- *  @author  : Umar Ba,jUmarB@protonmail.com  
+ *  @author  : Umar Ba,jUmarB@protonmail.com, OpenWire Studio .HomeLab 
  *  
  **/  
 
