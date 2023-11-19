@@ -1,5 +1,7 @@
 /** This is a simple illustration  of how to use libusage 
  *  ---It's not the only way to use it ---
+ *  @author  : Umar Ba,jUmarB@protonmail.com  
+ *  
  **/  
 
 #include <stdlib.h>
@@ -13,7 +15,7 @@
 #include "usage.h"  
 //see man page of  getopt 
 
-
+//! list of   options 
 struct option longopt[] ={
   {"help" , no_argument, 0  , 'h'} , 
   {"version" , no_argument , 0   , 'v'}, 
@@ -22,7 +24,7 @@ struct option longopt[] ={
 };
 
 #ifdef WITH_SYNOPSIS  
-//! by default the sysnopsis description   should be at the first index of the list  
+//! by default, the sysnopsis description must be in the first index of the list
 char  *descriptions[] = {
   "little synopsis that tell what it supposed to do" , 
   "show this help", 
@@ -47,41 +49,41 @@ int
 main ( int __ac , char **__av ) 
 {
    gopt_usage_t * usage  = _Nullable  ; 
-   //! you can choose to  init the usage in two ways 
-   //->  with the description list  
-   //->  without the description list  
-   //---|but later if you want to add the description 
-   //---|you will need to  use this functions  usage_register_description <see include/usage.h> 
-    
+
+   // ! you can choose to initialize use in one of two ways
+   //-> with the list of descriptions
+   //-> without description list
+   //---|but later if you want to add the description
+   //---|you'll need to use this function usage_register_description <see include/usage.h>.
+
 #ifdef   USAGE_INIT_WITH_DESC  
    usage = usage_init_(longopt , GETOPT_SIZE(longopt) , descriptions) ; 
    //! or use macro -->  usage = init_with_desc (longopt , GETOPT_SIZE(option) , descriptions)  ; 
 #else  
-   usage= usage_init(longopt , GETOPT_SIZE(longopt)) ;  
-   //! if you  want to register  the description list  later 
-   //! you must register the description list  
+   //you can also separate the logic like this
+   
+   usage= usage_init(longopt , GETOPT_SIZE(longopt)) ;  /*equivalent to :  usage_init_(longopt , GETOPT_SIZE(longopt) , NULL)*/
    usage_register_descriptions(usage , descriptions) ; 
 #endif 
 
   assert(usage != _Nullable ) ;  
+  
   //! if you build with sysnopsis enable choose GETOPT_SYNOPSIS_ON otherwise GETOPT_SYNOPSIS_OFF 
   usage_show(usage , __av  ,GETOPT_SYNOPSIS_ON) ;
-  //! here   some  alternatives 
+  
+  //! here  are  a few  alternatives 
   // usage_with_synopsis :  equivalent to usage_show(  usage , __av, GETOPT_SYNOPSIS_ON)  
   // usage_no_synopsis   :  equivalent to usage_show(  usage, __av , GETOPT_SYNOPSIS_OFF )
   // ----^------------
   // |* /!\\ WARNING *|
   // -----------------
-  // * you should know what you really want  to show 
-  // if   you choose with sysnopsis  
-  // the first index of the description list should be the sysnopsis  and the rest ill be affected to  option list respectively 
-  // when you choose no sysnopsis  
-  // make sure the option list and description list are length matched  
+  // * you need to know what you really want to show
+  // if you choose sysnopsis
+  // the first index in the description list must be sysnopsis and the rest will be assigned to the options list respectively
+  // if you choose no sysnopsis
+  // Make sure that the option list and the description list are of the same length.
+
    
-   
-
-
-
   
   return EXIT_SUCCESS; 
 }
