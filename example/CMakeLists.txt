@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.25)
 option(__synopis_status "Build with  synopsis"   ON) 
 option(__description_init_status  "init by registering  the description" ON )  
 
+##+  example : 
+####$ cmake -S . -B   build   -DBUILD_EXPLENO=1 
 if(BUILD_EXPLENO STREQUAL  2   OR   BUILD_EXPLENO STREQUAL 1)  
   project(example_${BUILD_EXPLENO})
   if (NOT EXISTS ${PROJECT_NAME}.c) 
@@ -27,8 +29,6 @@ endif()
 
 set(CMAKE_BUILD_TYPE Debug)
 
-#link_directories(../build) 
-#include_directories( ../include)  
 
 
 add_executable(${PROJECT_NAME}  ${PROJECT_NAME}.c) 
