@@ -20,6 +20,41 @@ if(USAGE_BN_CTLR)
   add_definitions(-DUSAGE_RESTRICT_BASENAME) 
 endif() 
 
+option(GENERATE_DOC "Generate documentation Api"  OFF) 
+if(${CMAKE_BUILD_TYPE} MATCHES  "[Rr]elease")  
+  message(STATUS "${libname} build for release ${PROJECT_VERSION} !") 
+  set(GENERATE_DOC ON  ) #CACHE BOOL "Generate documentation api for ${libname} version ${PROJECT_VERSION}")
+endif() 
+
+if(GENERATE_DOC)
+
+  message(CHECK_START "Looking Doxygen build engine  ..")
+  list(APPEND CMAKE_MESSAGE_INDENT "[DOXYGEN] ")
+  find_package(Doxygen) 
+  if(DOXYGEN_FOUND) 
+    message(CHECK_PASS  "FOUND") 
+    message(CHECK_START "Looking Doxyfile config ...") 
+    set(Doxyconf ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile)
+    if(NOT EXISTS  ${Doxyconf})  
+      message(CHECK_FAIL "NOT FOUND")  
+      message(FATAL_ERROR  "no Doxyfile found  hint try  <doxywizard> or <doxygen> -g Doxyfile") 
+    endif()
+    message(CHECK_PASS  "FOUND")
+    
+    list(POP_BACK CMAKE_MESSAGE_INDENT)  
+     
+    add_custom_target(doxyrun  ALL 
+      COMMAND   ${DOXYGEN_EXECUTABLE}  ${Doxyconf}
+      WORKING_DIRECTORY  ${CMAKE_CURRENT_SOURCE_DIR}
+      COMMENT "Build doxygen api documentation..."
+      VERBATIM
+    ) 
+
+  else () 
+    message(WARNING "not able to Generate  api documentation") 
+  endif()
+endif()  
+
 
 file(GLOB_RECURSE  src  src/*) 
 file(GLOB_RECURSE  hdr  include/*) 
