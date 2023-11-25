@@ -24,9 +24,7 @@
 
 #define  USAGE  
 
-#ifdef __cplusplus
-extern "C"  {   
-#endif 
+__BEGIN_DECLS  
 
 /** 
  * !All  char array have size  of MXBUFF
@@ -303,9 +301,9 @@ USAGE static char *  __must_check  root_basename (char  *const *  __argv ,char *
 //! reformat basename  programme when it start  with './'
 USAGE static char *  __must_check  fds_basename (char *basename) ; 
 
+__END_DECLS
 
-#ifdef __cplusplus 
-} 
-#endif 
+
+
 
 #endif /** GETOPT_USAGE_H  */
