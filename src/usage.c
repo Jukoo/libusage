@@ -25,7 +25,7 @@
 
 #include "usage.h" 
 
-static struct __getopt_usage_t *goptu_pref = _nullable ; 
+struct __getopt_usage_t *goptu_pref = _nullable ;
 
 struct  __getopt_usage_t *  usage_init ( struct  option *  opt   , int size  )  
 {
@@ -150,10 +150,12 @@ char * usage_get_shortopt ( struct __getopt_usage_t * goptu )
          memset((goptu->shopt+j_index) ,  0x3a, 1) ;
          break ; 
        case optional_argument : 
-         //! no supported yet :TODO: LATER !!  
+         memset((goptu->shopt+j_index) , goptu->opt[index].val, 1) ;  
+         goptu->shopt[++j_index] = 0x3a; 
+         goptu->shopt[++j_index] = 0x3a; 
          break ; 
-     
      }
+
      index++ ;
      j_index++; 
      
@@ -255,3 +257,14 @@ static char * __must_check fds_basename  (  char *basename )
   return  basename ; 
 }
  
+USAGE char * usage_optional_argument_hdl(int ac , char * const * av , void * _deflaut_value)  
+{
+
+  if (optarg  == _nullable   &&  ac >  optind  &&  av[optind][0] != '-') {
+     optarg = av[optind++] ; 
+  }else {  
+    return (char*) _deflaut_value ;  
+  } 
+
+  return optarg ;  
+}

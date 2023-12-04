@@ -21,4 +21,14 @@ Maybe it'll suit your needs
 
 * This  programme is not part of GNU C Library *
 
+Build  lib : 
+---
+$  cmake -S . -B build
+
+Build playground examples 
+---
+$ cd playground 
+$ cmake -S . -B build -DBUILD_EXPLENO=1 #for example_1.c 
+$ cmake -S . -B build -DBUILD_EXPLENO=2 #for example_2.c   
+
 -- Happy Hacking Folks ! 

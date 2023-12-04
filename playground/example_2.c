@@ -16,7 +16,7 @@ struct option longopt[] ={
   {"help" , no_argument, 0  , 'h'} ,
   {"version" , no_argument , 0   , 'v'},
   {"flag1" , required_argument ,  0 ,  'f'} ,
-  {"flag2" , required_argument ,  0 ,  'F'} ,
+  {"flag2" , optional_argument ,  0 ,  'F'} ,
 };
 
 #ifdef WITH_SYNOPSIS
@@ -53,7 +53,7 @@ int argparse(int ac , char *const* _av   , gopt_usage_t * usage )
 {
   if (usage == NULL)return  -USAGE_GINFAIL ;
 
-  char *shortopts =  usage_get_shortopt(usage) ; 
+  char *shortopts =  usage_get_shortopt(usage) ;
   
   int  opt =0 ; 
   while ( (opt = getopt_long(ac, _av , shortopts , usage->opt,0)) != ~0 ) { 
@@ -65,9 +65,13 @@ int argparse(int ac , char *const* _av   , gopt_usage_t * usage )
         printf("version  1.0\n") ;
         break ; 
       case 'f': 
-      case 'F': 
-        printf("value of Ff %s \n" , optarg) ;  
+        printf("value of f %s \n" , optarg) ;  
         break ; 
+      case 'F': 
+        char *optional_value = usage_optional_argument_hdl(ac, _av  ,  "defaultValue_here!" /*set NULL if you want no default value*/) ;  
+        printf("option value  %s \n" ,  optional_value) ; 
+
+        break; 
       default : 
         usage_with_synopsis(usage , _av) ;  
         break ;  

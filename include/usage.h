@@ -196,6 +196,8 @@ struct __getopt_usage_t {
 
 } ;
 
+extern struct  __getopt_usage_t * goptu_pref ;  
+
 
 /** @fn  struct __getopt_usage_t  * init (struct option *   , int size )   
  *  @brief initialize  getoptusage struct 
@@ -300,6 +302,21 @@ USAGE static char *  __must_check  root_basename (char  *const *  __argv ,char *
 
 //! reformat basename  programme when it start  with './'
 USAGE static char *  __must_check  fds_basename (char *basename) ; 
+
+
+/** @fn usage_optional_argument_hdl(int ac  , char * const * av)  
+ *  @brief handler  for optional_argument default behavior when an empty space
+ *         between flag and optargs value is automatically set to NULL
+ *          e.g. -e 12 : optargs (null)
+ *          and you have to pass the argument like this -e12 and it's not very comfortable for the user 
+ *          and doesn't respect program standars on GNU/Linux and that's why ...
+ *         
+ *  @param  int           - argument counter
+ *  @param  char *const * - argument value  
+ *  @return char * 
+ *
+ */ 
+USAGE char *usage_optional_argument_hdl(int __ac , char * const* __av , void *  __default_value) ;  
 
 __END_DECLS
 
