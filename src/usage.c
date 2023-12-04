@@ -150,10 +150,12 @@ char * usage_get_shortopt ( struct __getopt_usage_t * goptu )
          memset((goptu->shopt+j_index) ,  0x3a, 1) ;
          break ; 
        case optional_argument : 
-         //! no supported yet :TODO: LATER !!  
+         memset((goptu->shopt+j_index) , goptu->opt[index].val, 1) ;  
+         goptu->shopt[++j_index] = 0x3a; 
+         goptu->shopt[++j_index] = 0x3a; 
          break ; 
-     
      }
+
      index++ ;
      j_index++; 
      

@@ -16,7 +16,7 @@ struct option longopt[] ={
   {"help" , no_argument, 0  , 'h'} ,
   {"version" , no_argument , 0   , 'v'},
   {"flag1" , required_argument ,  0 ,  'f'} ,
-  {"flag2" , required_argument ,  0 ,  'F'} ,
+  {"flag2" , optional_argument ,  0 ,  'F'} ,
 };
 
 #ifdef WITH_SYNOPSIS
@@ -53,7 +53,7 @@ int argparse(int ac , char *const* _av   , gopt_usage_t * usage )
 {
   if (usage == NULL)return  -USAGE_GINFAIL ;
 
-  char *shortopts =  usage_get_shortopt(usage) ; 
+  char *shortopts =  usage_get_shortopt(usage) ;
   
   int  opt =0 ; 
   while ( (opt = getopt_long(ac, _av , shortopts , usage->opt,0)) != ~0 ) { 
@@ -82,7 +82,7 @@ int main (int __ac , char ** __av)
 {
   //That all you need  ... just 2 lines ... 
   gopt_usage_t * usage =  init_with_desc(longopt , GETOPT_SIZE(longopt) , descriptions)  ; 
-  argparse(__ac ,__av , usage) ; 
+  rgparse(__ac ,__av , usage) ; 
    
 
   return EXIT_SUCCESS ; 
