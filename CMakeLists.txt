@@ -20,7 +20,7 @@ if(USAGE_BN_CTLR)
   add_definitions(-DUSAGE_RESTRICT_BASENAME) 
 endif() 
 
-option(GENERATE_DOC "Generate documentation Api"  OFF) 
+option(GENERATE_DOC "Generate documentation API"  OFF) 
 if(${CMAKE_BUILD_TYPE} MATCHES  "[Rr]elease")  
   message(STATUS "${libname} build for release ${PROJECT_VERSION} !") 
   set(GENERATE_DOC ON  ) #CACHE BOOL "Generate documentation api for ${libname} version ${PROJECT_VERSION}")

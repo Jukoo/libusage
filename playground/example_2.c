@@ -65,9 +65,13 @@ int argparse(int ac , char *const* _av   , gopt_usage_t * usage )
         printf("version  1.0\n") ;
         break ; 
       case 'f': 
-      case 'F': 
-        printf("value of Ff %s \n" , optarg) ;  
+        printf("value of f %s \n" , optarg) ;  
         break ; 
+      case 'F': 
+        char *optional_value = usage_optional_argument_hdl(ac, _av  ,  "defaultValue_here!" /*set NULL if you want no default value*/) ;  
+        printf("option value  %s \n" ,  optional_value) ; 
+
+        break; 
       default : 
         usage_with_synopsis(usage , _av) ;  
         break ;  
@@ -82,7 +86,7 @@ int main (int __ac , char ** __av)
 {
   //That all you need  ... just 2 lines ... 
   gopt_usage_t * usage =  init_with_desc(longopt , GETOPT_SIZE(longopt) , descriptions)  ; 
-  rgparse(__ac ,__av , usage) ; 
+  argparse(__ac ,__av , usage) ; 
    
 
   return EXIT_SUCCESS ; 

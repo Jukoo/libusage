@@ -25,7 +25,7 @@
 
 #include "usage.h" 
 
-static struct __getopt_usage_t *goptu_pref = _nullable ; 
+struct __getopt_usage_t *goptu_pref = _nullable ;
 
 struct  __getopt_usage_t *  usage_init ( struct  option *  opt   , int size  )  
 {
@@ -257,3 +257,14 @@ static char * __must_check fds_basename  (  char *basename )
   return  basename ; 
 }
  
+USAGE char * usage_optional_argument_hdl(int ac , char * const * av , void * _deflaut_value)  
+{
+
+  if (optarg  == _nullable   &&  ac >  optind  &&  av[optind][0] != '-') {
+     optarg = av[optind++] ; 
+  }else {  
+    return (char*) _deflaut_value ;  
+  } 
+
+  return optarg ;  
+}
