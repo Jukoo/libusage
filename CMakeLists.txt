@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION  3.25)
-project(usage  VERSION 1.0  DESCRIPTION "Simple library to build helper command dynamicly") 
+project(usage  VERSION 0.2.1  DESCRIPTION "Simple library to build helper command dynamicly") 
 
 set(libname  lib${PROJECT_NAME})  
 string(ASCII 27  ${libname}) 
@@ -62,6 +62,5 @@ file(GLOB_RECURSE  hdr  include/*)
 add_library(${PROJECT_NAME}  SHARED  ${src}) 
 target_include_directories(${PROJECT_NAME}  PRIVATE  include) 
 
-set_target_properties(${PROJECT_NAME} PROPERTIES VERSION  ${PROJECT_VERSION}) 
-set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION_MINOR}) 
+set_target_properties(${PROJECT_NAME} PROPERTIES VERSION  ${PROJECT_VERSION})
 set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER include/usage.h) 
