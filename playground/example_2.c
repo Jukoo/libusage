@@ -87,7 +87,13 @@ int main (int __ac , char ** __av)
   //That all you need  ... just 2 lines ... 
   gopt_usage_t * usage =  init_with_desc(longopt , GETOPT_SIZE(longopt) , descriptions)  ; 
   argparse(__ac ,__av , usage) ; 
-   
+  
+  usage_option_hdl_t * optargs =usage_optarg_push(_nullable ,  "test") ; 
+  usage_optarg_push( optargs ,  "test1" ) ; 
+  
+  usage_optarg_show(optargs) ; 
 
+  usage_optarg_delete(optargs) ; 
+  
   return EXIT_SUCCESS ; 
 }

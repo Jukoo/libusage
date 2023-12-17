@@ -22,6 +22,8 @@
 #include <err.h> 
 #include <libgen.h>  
 #include <getopt.h>
+#include <assert.h> 
+
 
 #include "usage.h" 
 
@@ -267,4 +269,65 @@ USAGE char * usage_optional_argument_hdl(int ac , char * const * av , void * _de
   } 
 
   return optarg ;  
+}
+
+struct __usage_option_hdl_t  * usage_optarg_push( struct  __usage_option_hdl_t * optarg_unit   , char const *  optname )   
+{
+  struct   __usage_option_hdl_t *  new_option =  (struct __usage_option_hdl_t *) malloc(sizeof(*new_option)) ;  
+  if (new_option == _nullable) {
+    return _nullable ; 
+  }
+
+  new_option->option_name= strdup(optname) ;   
+  new_option->next = _nullable ; 
+  
+  if (optarg_unit == _nullable){
+    return  new_option ; 
+  } 
+
+  optarg_unit->next = new_option;  
+  return  optarg_unit ; 
+
+} 
+
+static void usage_optarg_operation_mode (struct  __usage_option_hdl_t *  optarg_hdl  ,  PROPERTY opmode) 
+{
+  if  (optarg_hdl == _nullable) {
+    return  ; 
+  }
+
+  struct  __usage_option_hdl_t * cnode = optarg_hdl ; 
+  while (  cnode  !=  _nullable)  {
+
+    switch (opmode){
+      case USAGE_OPTARG_SHOW_MODE: 
+        fprintf(stdout , " -> %s \n" , cnode->option_name) ;  
+        break ; 
+      case USAGE_OPTARG_RELEASE_MODE :
+        printf("freeing : %s\n" , cnode->option_name ) ; 
+        struct  __usage_option_hdl_t * ref = cnode ;  
+        free(cnode->option_name) ;
+        cnode =   cnode->next ;  
+        free(ref) ; 
+        continue ; 
+        break ; 
+      default :  
+        return ;  
+    }
+    
+    cnode = cnode->next;  
+  }
+}
+
+void usage_optarg_show ( struct __usage_option_hdl_t *  opthdl) 
+{
+  usage_optarg_operation_mode(opthdl , USAGE_OPTARG_SHOW_MODE) ;  
+}
+
+
+struct __usage_option_hdl_t *  usage_optarg_delete(struct  __usage_option_hdl_t  * opthdl) 
+{
+   usage_optarg_operation_mode(opthdl ,  USAGE_OPTARG_RELEASE_MODE) ;  
+   //assert(opthdl == _nullable) ; 
+   return  opthdl  ; 
 }
