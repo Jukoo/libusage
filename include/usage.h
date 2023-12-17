@@ -224,7 +224,7 @@ extern struct  __getopt_usage_t * goptu_pref ;
  */ 
 USAGE  struct  __usage_option_hdl_t * usage_optarg_push( struct  __usage_option_hdl_t * opthdl_unit  , char const   *option_name)  ; 
 
-USAGE  static  void  usage_optarg_operation_mode (struct __usage_option_hdl_t *  opthdl_unit_first_node , PROPERTY __mode ) __nonullx(1) ; 
+USAGE  static  struct   __usage_option_hdl_t *  usage_optarg_operation_mode (struct __usage_option_hdl_t *  opthdl_unit_first_node , PROPERTY __mode ) __nonullx(1) ; 
 
 USAGE  void  usage_optarg_show(struct __usage_option_hdl_t * opthdl) __nonull; 
 USAGE  struct __usage_option_hdl_t * usage_optarg_delete(struct __usage_option_hdl_t *  opthdl) __nonull  ; 

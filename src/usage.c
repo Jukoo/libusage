@@ -290,10 +290,10 @@ struct __usage_option_hdl_t  * usage_optarg_push( struct  __usage_option_hdl_t *
 
 } 
 
-static void usage_optarg_operation_mode (struct  __usage_option_hdl_t *  optarg_hdl  ,  PROPERTY opmode) 
+static  struct __usage_option_hdl_t *  usage_optarg_operation_mode (struct  __usage_option_hdl_t *  optarg_hdl  ,  PROPERTY opmode) 
 {
   if  (optarg_hdl == _nullable) {
-    return  ; 
+    return  _nullable ;  
   }
 
   struct  __usage_option_hdl_t * cnode = optarg_hdl ; 
@@ -304,7 +304,6 @@ static void usage_optarg_operation_mode (struct  __usage_option_hdl_t *  optarg_
         fprintf(stdout , " -> %s \n" , cnode->option_name) ;  
         break ; 
       case USAGE_OPTARG_RELEASE_MODE :
-        printf("freeing : %s\n" , cnode->option_name ) ; 
         struct  __usage_option_hdl_t * ref = cnode ;  
         free(cnode->option_name) ;
         cnode =   cnode->next ;  
@@ -312,11 +311,13 @@ static void usage_optarg_operation_mode (struct  __usage_option_hdl_t *  optarg_
         continue ; 
         break ; 
       default :  
-        return ;  
+        return  optarg_hdl ;  
     }
     
     cnode = cnode->next;  
   }
+  
+  return cnode ; 
 }
 
 void usage_optarg_show ( struct __usage_option_hdl_t *  opthdl) 
@@ -327,7 +328,7 @@ void usage_optarg_show ( struct __usage_option_hdl_t *  opthdl)
 
 struct __usage_option_hdl_t *  usage_optarg_delete(struct  __usage_option_hdl_t  * opthdl) 
 {
-   usage_optarg_operation_mode(opthdl ,  USAGE_OPTARG_RELEASE_MODE) ;  
-   //assert(opthdl == _nullable) ; 
-   return  opthdl  ; 
+   struct  __usage_option_hdl_t * status  = usage_optarg_operation_mode(opthdl ,  USAGE_OPTARG_RELEASE_MODE) ;  
+   assert(status  == _nullable) ; 
+   return  status   ; 
 }
