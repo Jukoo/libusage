@@ -40,6 +40,7 @@ struct  __getopt_usage_t *  usage_init ( struct  option *  opt   , int size  )
   goptu->opt_size  =   size  ;
   explicit_bzero(goptu->synopsis,MXBUFF);  
   goptu_pref   = goptu ; 
+  goptu->optargs_node = _nullable ; 
 
   return goptu;  
 }
@@ -61,6 +62,8 @@ struct __getopt_usage_t * usage_init_(struct option *  opt , int size ,  char * 
    usage_register_descriptions(goptu ,  desclist) ; 
 
    goptu_pref   = goptu ; 
+   goptu->optargs_node = _nullable ; 
+
    return goptu; 
 
     
@@ -68,7 +71,12 @@ struct __getopt_usage_t * usage_init_(struct option *  opt , int size ,  char * 
 
 void __destroy usage_autofree(void) 
 {
-   if(goptu_pref == _nullable )return  ; 
+   if(goptu_pref == _nullable )return ;
+   if(goptu_pref->optargs_node == _nullable) return ;   
+   if (goptu_pref->optargs_node != _nullable){
+      struct __usage_option_hdl_t * status = usage_optarg_delete(goptu_pref->optargs_node)   ; 
+      assert(status == _nullable) ;  
+   }
    
    free(goptu_pref) ;
 }
@@ -279,21 +287,27 @@ struct __usage_option_hdl_t  * usage_optarg_push( struct  __usage_option_hdl_t *
   }
 
   new_option->option_name= strdup(optname) ;   
-  new_option->next = _nullable ; 
+  new_option->next =   _nullable ;  
+  
+  printf ("push %s \n" , new_option->option_name) ; 
   
   if (optarg_unit == _nullable){
     return  new_option ; 
   } 
+  new_option->next = optarg_unit ; 
+  
+  //optarg_unit->next  = new_option ; // we need  a pointer that point on top 
+  
+   return  new_option; 
 
-  optarg_unit->next = new_option;  
-  return  optarg_unit ; 
+}
 
-} 
 
-static void usage_optarg_operation_mode (struct  __usage_option_hdl_t *  optarg_hdl  ,  PROPERTY opmode) 
+
+static  struct __usage_option_hdl_t *  usage_optarg_operation_mode (struct  __usage_option_hdl_t *  optarg_hdl  ,  PROPERTY opmode) 
 {
   if  (optarg_hdl == _nullable) {
-    return  ; 
+    return  _nullable ;  
   }
 
   struct  __usage_option_hdl_t * cnode = optarg_hdl ; 
@@ -304,30 +318,50 @@ static void usage_optarg_operation_mode (struct  __usage_option_hdl_t *  optarg_
         fprintf(stdout , " -> %s \n" , cnode->option_name) ;  
         break ; 
       case USAGE_OPTARG_RELEASE_MODE :
-        printf("freeing : %s\n" , cnode->option_name ) ; 
         struct  __usage_option_hdl_t * ref = cnode ;  
-        free(cnode->option_name) ;
-        cnode =   cnode->next ;  
+        printf("rm  %s\n" ,  ref->option_name) ; 
+        free(ref->option_name) ;
+        cnode =   cnode->next ;
         free(ref) ; 
         continue ; 
         break ; 
+
       default :  
-        return ;  
+        return  optarg_hdl ;  
     }
     
     cnode = cnode->next;  
   }
+  
+  return cnode ; 
 }
 
 void usage_optarg_show ( struct __usage_option_hdl_t *  opthdl) 
 {
-  usage_optarg_operation_mode(opthdl , USAGE_OPTARG_SHOW_MODE) ;  
+  (void *)usage_optarg_operation_mode(opthdl , USAGE_OPTARG_SHOW_MODE) ;  
 }
 
 
-struct __usage_option_hdl_t *  usage_optarg_delete(struct  __usage_option_hdl_t  * opthdl) 
+static struct __usage_option_hdl_t *  usage_optarg_delete(struct  __usage_option_hdl_t  * opthdl) 
 {
-   usage_optarg_operation_mode(opthdl ,  USAGE_OPTARG_RELEASE_MODE) ;  
-   //assert(opthdl == _nullable) ; 
-   return  opthdl  ; 
+   struct  __usage_option_hdl_t * status  = usage_optarg_operation_mode(opthdl ,  USAGE_OPTARG_RELEASE_MODE) ;  
+   assert(status  == _nullable) ; 
+   return  status   ; 
+}
+
+
+struct   __usage_option_hdl_t * usage_optarg_register(struct __getopt_usage_t * gopt)
+{
+   if (gopt  == _nullable)  return   _nullable ; 
+  
+   int option_count = 0 ; 
+
+   while (gopt->opt_size  > option_count){ 
+     char  *option_name  = (char *)gopt->opt[option_count].name ; 
+     gopt->optargs_node =  usage_optarg_push(gopt->optargs_node , option_name) ;
+      
+     option_count++; 
+   } 
+    
+  return  gopt->optargs_node ;  
 }

@@ -214,20 +214,17 @@ struct __usage_option_hdl_t  {
 typedef enum __USAGE_OPTION_HDL_PROPERTY PROPERTY ;  
 enum   __USAGE_OPTION_HDL_PROPERTY { 
   USAGE_OPTARG_SHOW_MODE, 
-  USAGE_OPTARG_RELEASE_MODE 
+  USAGE_OPTARG_RELEASE_MODE
 } ; 
 
 
 extern struct  __getopt_usage_t * goptu_pref ;  
 
-/**
- */ 
-USAGE  struct  __usage_option_hdl_t * usage_optarg_push( struct  __usage_option_hdl_t * opthdl_unit  , char const   *option_name)  ; 
-
-USAGE  static  void  usage_optarg_operation_mode (struct __usage_option_hdl_t *  opthdl_unit_first_node , PROPERTY __mode ) __nonullx(1) ; 
-
+USAGE  struct  __usage_option_hdl_t * usage_optarg_push( struct  __usage_option_hdl_t * opthdl_unit  , char const   *option_name)  ;
+USAGE  static  struct   __usage_option_hdl_t *  usage_optarg_operation_mode (struct __usage_option_hdl_t *  opthdl_unit_first_node , PROPERTY __mode ) __nonullx(1) ; 
 USAGE  void  usage_optarg_show(struct __usage_option_hdl_t * opthdl) __nonull; 
-USAGE  struct __usage_option_hdl_t * usage_optarg_delete(struct __usage_option_hdl_t *  opthdl) __nonull  ; 
+USAGE  static  struct __usage_option_hdl_t * usage_optarg_delete(struct __usage_option_hdl_t *  opthdl) __nonull  ; 
+USAGE  struct  __usage_option_hdl_t * usage_optarg_register(struct  __getopt_usage_t * gopt) ;  
  
 
 /** @fn  struct __getopt_usage_t  * init (struct option *   , int size )   
